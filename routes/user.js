@@ -18,7 +18,6 @@ router.get('/search', async (req, res) => {
       where: {
         name: {
           contains: name,
-          mode: 'insensitive', // Case-insensitive search
         },
       },
       select: {
