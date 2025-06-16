@@ -18,6 +18,7 @@ const interaction = require('./routes/interaction');
 const hintRoutes = require('./routes/hint');
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message'); // Add this line
+const validateRoutes = require('./routes/validate');
 const authenticateToken = require('./middleware/authMiddleware');
 
 // Inicialização segura do Prisma
@@ -75,6 +76,7 @@ app.use('/api', interaction);
 app.use('/api/hints', hintRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes); // Add this line
+app.use('/api', validateRoutes);
 
 // Configuração do multer com validações
 const storage = multer.diskStorage({

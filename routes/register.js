@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '1h';
 
 router.post('/register', authLimiter, async (req, res) => {
-  const { email, password, name, birthdate, cpf } = req.body;
+  const { email, password, name, birthdate, cpf, whatsapp } = req.body;
 
   if (!email || !password || !name || !birthdate || !cpf) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
@@ -54,6 +54,7 @@ router.post('/register', authLimiter, async (req, res) => {
         name,
         birthdate: new Date(birthdate),
         cpf,
+        whatsapp: whatsapp || null,
       },
     });
 
@@ -63,6 +64,19 @@ router.post('/register', authLimiter, async (req, res) => {
       JWT_SECRET,
       { expiresIn: TOKEN_EXPIRATION }
     );
+
+    // Vincula mensagens "pendentes" ao novo usuário
+    await prisma.message.updateMany({
+      where: {
+        OR: [
+          { recipientEmail: user.email },
+          { recipientPhone: user.cpf },
+          { recipientUsername: user.name }
+        ],
+        recipientId: null
+      },
+      data: { recipientId: user.id }
+    });
 
     res.status(201).json({ message: 'Usuário criado com sucesso', id: user.id, token });
   } catch (error) {
