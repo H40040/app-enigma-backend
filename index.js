@@ -9,6 +9,12 @@ const compression = require('compression');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
+// Middleware para proteção contra XSS e sanitização básica
+const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const cookieParser = require('cookie-parser');
+const hpp = require('hpp'); // Add hpp to prevent HTTP Parameter Pollution
+const csurf = require('csurf'); // CSRF protection
 
 // Importação de rotas
 const register = require('./routes/register');
@@ -18,7 +24,7 @@ const interaction = require('./routes/interaction');
 const hintRoutes = require('./routes/hint');
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message'); // Add this line
-const authenticateToken = require('./middleware/authMiddleware');
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('./middleware/authMiddleware');
 
 // Inicialização segura do Prisma
 let prisma;
@@ -32,10 +38,27 @@ try {
 const app = express();
 
 // Middlewares de segurança e performance
-app.use(helmet()); // Adiciona headers de segurança
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000']
+    }
+  },
+  crossOriginEmbedderPolicy: false, // For compatibility with external resources
+  crossOriginResourcePolicy: { policy: 'cross-origin' } // Allow cross-origin resource sharing
+})); 
 app.use(compression()); // Comprime as respostas
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+app.use(cookieParser(process.env.COOKIE_SECRET)); // Para processar cookies
+app.use(mongoSanitize()); // Prevent NoSQL Injection
+app.use(xss()); // Clean user input
+app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 // Configuração de CORS mais segura
 const corsOptions = {
@@ -63,18 +86,33 @@ app.use('/uploads', (req, res, next) => {
 }, express.static(path.join(__dirname, 'uploads')));
 
 // Rota protegida para teste
-app.get('/api/protected', authenticateToken, (req, res) => {
+app.get('/api/protected', authenticateToken, checkSessionActivity, trackUserActivity, (req, res) => {
   res.json({ message: 'Acesso autorizado', user: req.user });
+});
+
+// Setup CSRF protection (except for auth routes that need special handling)
+const csrfProtection = csurf({ 
+  cookie: { 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  }
 });
 
 // Rotas importadas
 app.use('/api', register);
 app.use('/api/auth', auth); // Rota de autenticação
-app.use('/api', dashboard);
-app.use('/api', interaction);
-app.use('/api/hints', hintRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/messages', messageRoutes); // Add this line
+// Protected routes with CSRF
+app.use('/api', csrfProtection, dashboard);
+app.use('/api', csrfProtection, interaction);
+app.use('/api/hints', csrfProtection, hintRoutes);
+app.use('/api/users', csrfProtection, userRoutes);
+app.use('/api/messages', csrfProtection, messageRoutes);
+
+// Add route to send CSRF token to client
+app.get('/api/csrf-token', csrfProtection, (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 
 // Configuração do multer com validações
 const storage = multer.diskStorage({
@@ -111,7 +149,7 @@ const upload = multer({
 // Movendo rotas para arquivos separados, mantendo apenas a lógica essencial aqui
 
 // Rota de upload com autenticação
-app.post('/api/upload', authenticateToken, upload.single('media'), (req, res) => {
+app.post('/api/upload', authenticateToken, checkSessionActivity, trackUserActivity, upload.single('media'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });

@@ -64,7 +64,8 @@ router.post('/register', authLimiter, async (req, res) => {
       { expiresIn: TOKEN_EXPIRATION }
     );
 
-    res.status(201).json({ message: 'Usuário criado com sucesso', id: user.id, token });
+    // Nunca retorne a senha do usuário
+    res.json({ id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin, createdAt: user.createdAt });
   } catch (error) {
     console.error('Erro no registro:', error);
     res.status(500).json({ error: 'Erro ao registrar usuário' });
