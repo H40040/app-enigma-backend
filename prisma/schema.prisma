@@ -19,6 +19,7 @@ model User {
   lastLogin DateTime?
   isAdmin   Boolean   @default(false)
   admirers  Admirer[]
+  whatsapp   String?
 }
 
 model Admirer {

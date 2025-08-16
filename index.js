@@ -24,7 +24,8 @@ const interaction = require('./routes/interaction');
 const hintRoutes = require('./routes/hint');
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message'); // Add this line
-const { authenticateToken, trackUserActivity, checkSessionActivity } = require('./middleware/authMiddleware');
+const validateRoutes = require('./routes/validate');
+const authenticateToken = require('./middleware/authMiddleware');
 
 // Inicialização segura do Prisma
 let prisma;
@@ -102,17 +103,12 @@ const csrfProtection = csurf({
 // Rotas importadas
 app.use('/api', register);
 app.use('/api/auth', auth); // Rota de autenticação
-// Protected routes with CSRF
-app.use('/api', csrfProtection, dashboard);
-app.use('/api', csrfProtection, interaction);
-app.use('/api/hints', csrfProtection, hintRoutes);
-app.use('/api/users', csrfProtection, userRoutes);
-app.use('/api/messages', csrfProtection, messageRoutes);
-
-// Add route to send CSRF token to client
-app.get('/api/csrf-token', csrfProtection, (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
+app.use('/api', dashboard);
+app.use('/api', interaction);
+app.use('/api/hints', hintRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/messages', messageRoutes); // Add this line
+app.use('/api', validateRoutes);
 
 // Configuração do multer com validações
 const storage = multer.diskStorage({
