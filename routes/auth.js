@@ -11,19 +11,33 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error('AVISO: JWT_SECRET não configurado. Use uma variável de ambiente segura.');
 }
-const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '1h'; // tempo de expiração da sessão
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || JWT_SECRET + '-refresh';
+// Tempo de expiração reduzido para segurança - 15 minutos para o token de acesso
+const ACCESS_TOKEN_EXPIRATION = process.env.ACCESS_TOKEN_EXPIRATION || '15m';
+// Tempo maior para o refresh token (uma semana)
+const REFRESH_TOKEN_EXPIRATION = process.env.REFRESH_TOKEN_EXPIRATION || '7d';
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token não fornecido' });
+// Import the auth middleware instead of redefining it here
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Token inválido ou expirado' });
-    req.user = user;
-    next();
-  });
-}
+// Helper function to generate tokens
+const generateTokens = (user) => {
+  // Access token - short lived
+  const accessToken = jwt.sign(
+    { id: user.id, name: user.name, email: user.email }, 
+    JWT_SECRET, 
+    { expiresIn: ACCESS_TOKEN_EXPIRATION }
+  );
+  
+  // Refresh token - longer lived
+  const refreshToken = jwt.sign(
+    { id: user.id }, 
+    REFRESH_TOKEN_SECRET, 
+    { expiresIn: REFRESH_TOKEN_EXPIRATION }
+  );
+  
+  return { accessToken, refreshToken };
+};
 
 router.post('/verify-user', async (req, res) => {
   const { email, password } = req.body;
@@ -39,23 +53,120 @@ router.post('/verify-user', async (req, res) => {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return res.status(401).json({ error: 'Senha incorreta' });
 
-    const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email }, 
-      JWT_SECRET, 
-      { expiresIn: TOKEN_EXPIRATION }
-    );
-
-    res.json({ id: user.id, name: user.name, token });
+    // Generate tokens using our helper function
+    const { accessToken, refreshToken } = generateTokens(user);
+    
+    // Set HTTP-only cookies (more secure than localStorage)
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Only use secure in production
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
+    });
+    
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      path: '/api/auth/refresh-token', // Only accessible by the refresh endpoint
+    });
+    
+    // Still send tokens in response for clients that prefer not to use cookies
+    res.json({ 
+      id: user.id, 
+      name: user.name, 
+      email: user.email,
+      accessToken,
+      refreshToken 
+    });
   } catch (error) {
     console.error('Erro na autenticação:', error);
     res.status(500).json({ error: 'Erro interno no servidor' });
   }
 });
 
-router.get('/profile', authenticateToken, async (req, res) => {
+// Apply all middleware in sequence: auth check, inactivity check, and track activity
+router.get('/profile', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) => {
   const user = await prisma.user.findUnique({ where: { id: req.user.id } });
   if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
-  res.json({ user });
+  // Nunca retorne a senha do usuário
+  res.json({ user: { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin, createdAt: user.createdAt } });
+});
+
+// Endpoint to refresh tokens
+router.post('/refresh-token', async (req, res) => {
+  const { refreshToken } = req.body;
+  
+  // If no refresh token is provided
+  if (!refreshToken) {
+    return res.status(401).json({ 
+      error: 'Refresh token não fornecido', 
+      code: 'refresh_token_required' 
+    });
+  }
+  
+  try {
+    // Verify the refresh token
+    const decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+    
+    // Find the user
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    if (!user) {
+      return res.status(403).json({ 
+        error: 'Usuário não encontrado', 
+        code: 'user_not_found' 
+      });
+    }
+    
+    // Generate new tokens
+    const tokens = generateTokens(user);
+    
+    // Set cookies for better security
+    res.cookie('accessToken', tokens.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Only use secure in production
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes in milliseconds
+    });
+    
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      path: '/api/auth/refresh-token', // Only accessible by the refresh endpoint
+    });
+    
+    // Return tokens in the response as well (for clients that don't use cookies)
+    res.json({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
+    });
+    
+  } catch (error) {
+    console.error('Erro ao renovar token:', error);
+    return res.status(403).json({ 
+      error: 'Refresh token inválido ou expirado', 
+      code: 'refresh_token_invalid' 
+    });
+  }
+});
+
+// Logout endpoint
+router.post('/logout', (req, res) => {
+  // Clear both access and refresh token cookies
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken', { 
+    path: '/api/auth/refresh-token' 
+  });
+  
+  res.json({ message: 'Logout realizado com sucesso' });
 });
 
 // Endpoint para alteração de senha

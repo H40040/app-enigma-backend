@@ -4,10 +4,10 @@ const { PrismaClient } = require('@prisma/client');
 const express = require('express');
 const prisma = new PrismaClient();
 const router = express.Router();
-const authenticateToken = require('../middleware/authMiddleware');
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
 
 // Proteger a rota com autenticação
-router.post('/interaction/answer', authenticateToken, async (req, res) => {
+router.post('/interaction/answer', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) => {
   const { id, answer } = req.body;
 
   if (!id || !answer) {
@@ -111,7 +111,7 @@ router.post('/hint/:id/question', async (req, res) => {
 });
 
 // Rota para responder uma interação de uma dica
-router.post('/hint/:id/answer', require('../middleware/authMiddleware'), async (req, res) => {
+router.post('/hint/:id/answer', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) => {
   const { id } = req.params;
   const { answer } = req.body;
 

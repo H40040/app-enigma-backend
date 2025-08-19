@@ -1,7 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { body, param, validationResult } = require('express-validator');
-const authenticateToken = require('../middleware/authMiddleware');
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
 const multer = require('multer');
 
 const router = express.Router();
@@ -12,7 +12,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB
 
 // Criar uma nova dica
-router.post('/hint', authenticateToken, [
+router.post('/hint', authenticateToken, checkSessionActivity, trackUserActivity, [
   body('content').notEmpty().withMessage('O conteúdo é obrigatório'),
   body('type').isIn(['text', 'image', 'video', 'mixed']).withMessage('Tipo inválido'),
   body('publicUrl').optional().isString(), // Permite string, pode ser preenchido depois
@@ -94,7 +94,7 @@ router.get('/hint/:id', [
 });
 
 // Buscar todas as dicas de um admirador (agora por userId)
-router.get('/', authenticateToken, async (req, res) => { // Changed from /hints to /
+router.get('/', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) => { // Changed from /hints to /
   const userId = req.user.id;
   try {
     const admirer = await prisma.admirer.findFirst({ where: { userId } });
@@ -123,7 +123,7 @@ router.get('/', authenticateToken, async (req, res) => { // Changed from /hints 
 });
 
 // Deletar uma dica
-router.delete('/hint/:id', authenticateToken, [
+router.delete('/hint/:id', authenticateToken, checkSessionActivity, trackUserActivity, [
   param('id').notEmpty().withMessage('ID da dica é obrigatório')
 ], async (req, res) => {
   const errors = validationResult(req);

@@ -3,10 +3,10 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const router = express.Router();
 const prisma = new PrismaClient();
-const authenticateToken = require('../middleware/authMiddleware');
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
 
 // Aplicar middleware de autenticação
-router.get('/dashboard', authenticateToken, async (req, res) => {
+router.get('/dashboard', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) => {
   const { hintsFor } = req.query;
 
   if (!hintsFor) {
