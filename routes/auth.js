@@ -58,4 +58,72 @@ router.get('/profile', authenticateToken, async (req, res) => {
   res.json({ user });
 });
 
+// Endpoint para alteração de senha
+router.post('/change-password', authenticateToken, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  // Validação dos campos obrigatórios
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ 
+      error: 'Senha atual e nova senha são obrigatórias' 
+    });
+  }
+
+  // Validação do tamanho da nova senha
+  if (newPassword.length < 6) {
+    return res.status(400).json({ 
+      error: 'A nova senha deve ter pelo menos 6 caracteres' 
+    });
+  }
+
+  try {
+    // Buscar o usuário atual
+    const user = await prisma.user.findUnique({ 
+      where: { id: req.user.id } 
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    // Verificar se a senha atual está correta
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({ error: 'Senha atual incorreta' });
+    }
+
+    // Verificar se a nova senha é diferente da atual
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ 
+        error: 'A nova senha deve ser diferente da senha atual' 
+      });
+    }
+
+    // Hash da nova senha
+    const saltRounds = 10;
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Atualizar a senha no banco de dados
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { password: hashedNewPassword }
+    });
+
+    console.log(`[AUTH] Senha alterada com sucesso para usuário ID: ${req.user.id}`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Senha alterada com sucesso' 
+    });
+
+  } catch (error) {
+    console.error('[AUTH] Erro ao alterar senha:', error);
+    res.status(500).json({ 
+      error: 'Erro interno no servidor ao alterar senha',
+      details: error.message 
+    });
+  }
+});
+
 module.exports = router;

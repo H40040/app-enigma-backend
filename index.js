@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // Configuração de CORS mais segura
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL, 'http://192.168.1.91:3000', 'http://localhost:8080', 'http://127.0.0.1:8080'],
+  origin: [process.env.FRONTEND_URL, 'http://192.168.1.91:3000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:8081', 'http://127.0.0.1:8081'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization']

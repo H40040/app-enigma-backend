@@ -101,7 +101,9 @@ router.get('/', authenticateToken, async (req, res) => { // Changed from /hints 
     if (!admirer) return res.json([]);
     const hints = await prisma.hint.findMany({
       where: { admirerId: admirer.id },
-      include: { _count: { select: { interaction: true } } },
+      include: { 
+        _count: true
+      },
       orderBy: { createdAt: 'desc' }
     });
     const formatted = hints.map(h => ({
