@@ -25,7 +25,7 @@ const hintRoutes = require('./routes/hint');
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message'); // Add this line
 const validateRoutes = require('./routes/validate');
-const authenticateToken = require('./middleware/authMiddleware');
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('./middleware/authMiddleware');
 
 // Inicialização segura do Prisma
 let prisma;
