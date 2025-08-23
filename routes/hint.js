@@ -1,18 +1,17 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const { body, param, validationResult } = require('express-validator');
 const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
 const multer = require('multer');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Configuração do multer para aceitar arquivos de até 10MB
 const storage = multer.memoryStorage();
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB
 
 // Criar uma nova dica
-router.post('/hint', authenticateToken, checkSessionActivity, trackUserActivity, [
+router.post('/', authenticateToken, checkSessionActivity, trackUserActivity, [
   body('content').notEmpty().withMessage('O conteúdo é obrigatório'),
   body('type').isIn(['text', 'image', 'video', 'mixed']).withMessage('Tipo inválido'),
   body('publicUrl').optional().isString(), // Permite string, pode ser preenchido depois
@@ -24,7 +23,7 @@ router.post('/hint', authenticateToken, checkSessionActivity, trackUserActivity,
   }
 
   try {
-    const { content, type } = req.body;
+    const { content, type, publicUrl, qrCodeUrl } = req.body;
     const userId = req.user.id;
 
     let finalType = type;
@@ -45,7 +44,9 @@ router.post('/hint', authenticateToken, checkSessionActivity, trackUserActivity,
       data: {
         admirerId: admirer.id,
         content: finalContent,
-        type: finalType
+        type: finalType,
+        publicUrl: publicUrl || null,
+        qrCodeUrl: qrCodeUrl || null
       }
     });
 
@@ -59,7 +60,7 @@ router.post('/hint', authenticateToken, checkSessionActivity, trackUserActivity,
 });
 
 // Buscar uma dica específica
-router.get('/hint/:id', [
+router.get('/:id', [
   param('id').notEmpty().withMessage('ID da dica é obrigatório')
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -123,7 +124,7 @@ router.get('/', authenticateToken, checkSessionActivity, trackUserActivity, asyn
 });
 
 // Deletar uma dica
-router.delete('/hint/:id', authenticateToken, checkSessionActivity, trackUserActivity, [
+router.delete('/:id', authenticateToken, checkSessionActivity, trackUserActivity, [
   param('id').notEmpty().withMessage('ID da dica é obrigatório')
 ], async (req, res) => {
   const errors = validationResult(req);

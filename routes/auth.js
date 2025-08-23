@@ -1,10 +1,10 @@
 // backend/routes/auth.js
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
+const InputValidator = require('../lib/validation');
 
 // Remover o valor padrão hardcoded para maior segurança
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -42,16 +42,42 @@ const generateTokens = (user) => {
 router.post('/verify-user', async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+  // Validação e sanitização de inputs
+  const emailValidation = InputValidator.validateEmail(email);
+  if (!emailValidation.isValid) {
+    return res.status(400).json({ error: emailValidation.error });
+  }
+
+  if (!password || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Senha é obrigatória' });
+  }
+
+  if (password.length > 128) {
+    return res.status(400).json({ error: 'Senha inválida' });
   }
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(401).json({ error: 'Usuário não encontrado' });
-
+    const user = await prisma.user.findUnique({ where: { email: emailValidation.sanitized } });
+    
+    // Log de tentativa de login (sem dados sensíveis)
+    console.log(`[AUDIT] Tentativa de login: Email=${emailValidation.sanitized}, IP=${req.ip}`);
+    
+    if (!user) {
+      // Delay para prevenir timing attacks
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
     const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return res.status(401).json({ error: 'Senha incorreta' });
+    if (!isValid) {
+      // Log de tentativa de login falhada
+      console.log(`[AUDIT] Login falhado: Email=${emailValidation.sanitized}, IP=${req.ip}`);
+      // Delay para prevenir timing attacks
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+    
+    // Log de login bem-sucedido
+    console.log(`[AUDIT] Login bem-sucedido: UserID=${user.id}, Email=${emailValidation.sanitized}, IP=${req.ip}`);
 
     // Generate tokens using our helper function
     const { accessToken, refreshToken } = generateTokens(user);
@@ -113,7 +139,7 @@ router.post('/refresh-token', async (req, res) => {
     // Find the user
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
     if (!user) {
-      return res.status(403).json({ 
+      return res.status(404).json({ 
         error: 'Usuário não encontrado', 
         code: 'user_not_found' 
       });
@@ -180,11 +206,14 @@ router.post('/change-password', authenticateToken, async (req, res) => {
     });
   }
 
-  // Validação do tamanho da nova senha
-  if (newPassword.length < 6) {
-    return res.status(400).json({ 
-      error: 'A nova senha deve ter pelo menos 6 caracteres' 
-    });
+  // Validar nova senha com critérios de segurança
+  const passwordValidation = InputValidator.validatePassword(newPassword);
+  if (!passwordValidation.isValid) {
+    return res.status(400).json({ error: passwordValidation.error });
+  }
+
+  if (currentPassword.length > 128 || newPassword.length > 128) {
+    return res.status(400).json({ error: 'Senha inválida' });
   }
 
   try {
@@ -211,9 +240,11 @@ router.post('/change-password', authenticateToken, async (req, res) => {
       });
     }
 
-    // Hash da nova senha
-    const saltRounds = 10;
-    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+    // Hash da nova senha com salt mais alto
+    const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+    
+    // Log de mudança de senha (sem dados sensíveis)
+    console.log(`[AUDIT] Senha alterada: UserID=${req.user.id}, IP=${req.ip}`);
 
     // Atualizar a senha no banco de dados
     await prisma.user.update({

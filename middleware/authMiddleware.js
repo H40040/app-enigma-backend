@@ -1,100 +1,129 @@
 const jwt = require('jsonwebtoken');
+const InputValidator = require('../lib/validation');
+const prisma = require('../lib/prisma');
 
-function authenticateToken(req, res, next) {
-  // Check for token in cookies first (more secure), then fallback to Authorization header
-  const token = req.cookies?.accessToken || 
-    (req.headers.authorization && req.headers.authorization.split(' ')[1]);
-  
-  if (!token) {
-    return res.status(401).json({ 
-      error: 'Acesso não autorizado', 
-      message: 'Token de autenticação não fornecido',
-      code: 'token_required' 
-    });
-  }
-
-  const JWT_SECRET = process.env.JWT_SECRET;
-  if (!JWT_SECRET) {
-    console.error('ERRO: JWT_SECRET não configurado no ambiente');
+const authenticateToken = (req, res, next) => {
+  // Verificar se JWT_SECRET está configurado
+  if (!process.env.JWT_SECRET) {
+    console.error('[SECURITY] JWT_SECRET não configurado!');
     return res.status(500).json({ error: 'Erro de configuração do servidor' });
   }
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ 
-        error: 'Token expirado', 
-        message: 'Sua sessão expirou. Por favor, faça login novamente',
-        code: 'token_expired'
-      });
+  // Primeiro, tenta pegar o token do cookie
+  let token = req.cookies?.accessToken;
+  
+  // Se não encontrar no cookie, tenta no header Authorization
+  if (!token) {
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7); // Remove 'Bearer '
     }
-    return res.status(403).json({ 
-      error: 'Token inválido', 
-      message: 'O token de autenticação fornecido é inválido',
-      code: 'token_invalid'
-    });
   }
-}
 
-// Activity tracking middleware
-function trackUserActivity(req, res, next) {
-  // Skip tracking for non-authenticated routes
-  if (!req.user) {
-    return next();
+  if (!token) {
+    console.log(`[AUDIT] Tentativa de acesso sem token: IP=${req.ip}, URL=${req.originalUrl}`);
+    return res.status(401).json({ error: 'Token de acesso requerido' });
   }
-  
-  const userId = req.user.id;
-  
-  // Store last active timestamp in-memory
-  // In a production app, this would be stored in Redis or a database
-  if (!global.userActivity) {
-    global.userActivity = {};
-  }
-  
-  // Update last activity time
-  global.userActivity[userId] = new Date();
-  
-  next();
-}
 
-// Check if user session is inactive (no activity for X minutes)
-function checkSessionActivity(req, res, next) {
-  // Skip check for non-authenticated routes
-  if (!req.user) {
-    return next();
+  // Validar formato básico do token
+  if (typeof token !== 'string' || token.length > 1000) {
+    console.log(`[AUDIT] Token inválido detectado: IP=${req.ip}`);
+    return res.status(401).json({ error: 'Token inválido' });
   }
-  
-  const userId = req.user.id;
-  const MAX_INACTIVITY = process.env.MAX_INACTIVITY_MINUTES || 30; // 30 minutes default
-  
-  // If we have activity data for this user
-  if (global.userActivity && global.userActivity[userId]) {
-    const lastActive = global.userActivity[userId];
-    const now = new Date();
-    const diffMinutes = Math.floor((now - lastActive) / 60000);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.log(`[AUDIT] Falha na verificação de token: IP=${req.ip}, Error=${err.name}`);
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ error: 'Token expirado' });
+      }
+      if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({ error: 'Token inválido' });
+      }
+      return res.status(403).json({ error: 'Falha na autenticação' });
+    }
     
-    // If inactive for too long
-    if (diffMinutes > MAX_INACTIVITY) {
-      // Clear cookies
-      res.clearCookie('accessToken');
-      res.clearCookie('refreshToken', { path: '/api/auth/refresh-token' });
-      
-      // Remove activity tracking
-      delete global.userActivity[userId];
-      
-      return res.status(401).json({
-        error: 'Sessão inativa',
-        message: 'Sua sessão expirou por inatividade. Por favor, faça login novamente.',
-        code: 'session_inactive'
+    // Validar estrutura do payload do token
+    if (!user || !user.id || !user.email) {
+      console.log(`[AUDIT] Token com payload inválido: IP=${req.ip}`);
+      return res.status(401).json({ error: 'Token inválido' });
+    }
+    
+    req.user = user;
+    next();
+  });
+};
+
+const trackUserActivity = async (req, res, next) => {
+  if (req.user && req.user.id) {
+    try {
+      // Validar ID do usuário
+      const userId = parseInt(req.user.id);
+      if (isNaN(userId) || userId <= 0) {
+        console.log(`[AUDIT] ID de usuário inválido no token: ${req.user.id}`);
+        return res.status(401).json({ error: 'Token inválido' });
+      }
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: { lastActivity: new Date() }
       });
+      
+      // Log de atividade para auditoria
+      console.log(`[AUDIT] Atividade do usuário: UserID=${userId}, Action=${req.method} ${req.originalUrl}, IP=${req.ip}`);
+    } catch (error) {
+      console.error('Erro ao atualizar atividade do usuário:', error);
+      // Se o usuário não existe, token pode estar comprometido
+      if (error.code === 'P2025') {
+        return res.status(401).json({ error: 'Usuário não encontrado' });
+      }
     }
   }
-  
   next();
-}
+};
+
+const checkSessionActivity = async (req, res, next) => {
+  if (req.user && req.user.id) {
+    try {
+      // Validar ID do usuário
+      const userId = parseInt(req.user.id);
+      if (isNaN(userId) || userId <= 0) {
+        console.log(`[AUDIT] ID de usuário inválido na verificação de sessão: ${req.user.id}`);
+        return res.status(401).json({ error: 'Token inválido' });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { lastActivity: true, email: true }
+      });
+
+      if (!user) {
+        console.log(`[AUDIT] Usuário não encontrado na verificação de sessão: UserID=${userId}`);
+        return res.status(401).json({ error: 'Usuário não encontrado' });
+      }
+
+      const now = new Date();
+      const lastActivity = new Date(user.lastActivity);
+      const timeDiff = now - lastActivity;
+      const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+      // Se a última atividade foi há mais de 24 horas, considerar sessão expirada
+      if (hoursDiff > 24) {
+        console.log(`[AUDIT] Sessão expirada por inatividade: UserID=${userId}, HoursInactive=${hoursDiff.toFixed(2)}`);
+        return res.status(401).json({ error: 'Sessão expirada por inatividade' });
+      }
+      
+      // Se a última atividade foi há mais de 1 hora, logar para monitoramento
+      if (hoursDiff > 1) {
+        console.log(`[AUDIT] Sessão com inatividade prolongada: UserID=${userId}, HoursInactive=${hoursDiff.toFixed(2)}`);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar atividade da sessão:', error);
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
+  next();
+};
 
 module.exports = {
   authenticateToken,

@@ -26,6 +26,7 @@ const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message'); // Add this line
 const validateRoutes = require('./routes/validate');
 const { authenticateToken, trackUserActivity, checkSessionActivity } = require('./middleware/authMiddleware');
+const { authLimiter, passwordChangeLimiter, validationLimiter, apiLimiter: customApiLimiter, messageLimiter } = require('./middleware/rateLimit');
 
 // Inicialização segura do Prisma
 let prisma;
@@ -70,14 +71,14 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Limitador de requisições para prevenir ataques de força bruta
-const apiLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minuto para dev
-  max: 500, // limite mais alto para desenvolvimento
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use('/api/', apiLimiter);
+// Aplicar rate limiters específicos
+app.use('/api/', customApiLimiter); // Rate limiter geral
+app.use('/api/auth/login', authLimiter); // Rate limiter para login
+app.use('/api/register', authLimiter); // Rate limiter para registro
+app.use('/api/auth/change-password', passwordChangeLimiter); // Rate limiter para mudança de senha
+app.use('/api/validate-cpf', validationLimiter); // Rate limiter para validação CPF
+app.use('/api/validate-whatsapp', validationLimiter); // Rate limiter para validação WhatsApp
+app.use('/api/messages', messageLimiter); // Rate limiter para mensagens
 
 // Serviço de arquivos estáticos com CORS liberado corretamente
 app.use('/uploads', (req, res, next) => {
@@ -104,7 +105,7 @@ const csrfProtection = csurf({
 app.use('/api', register);
 app.use('/api/auth', auth); // Rota de autenticação
 app.use('/api', dashboard);
-app.use('/api', interaction);
+app.use('/api/interactions', interaction);
 app.use('/api/hints', hintRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes); // Add this line

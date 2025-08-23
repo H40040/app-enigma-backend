@@ -1,20 +1,38 @@
 // backend/routes/interaction.js
 
-const { PrismaClient } = require('@prisma/client');
 const express = require('express');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 const router = express.Router();
 const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
+const InputValidator = require('../lib/validation');
 
 // Proteger a rota com autenticação
 router.post('/interaction/answer', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) => {
   const { id, answer } = req.body;
 
-  if (!id || !answer) {
-    return res.status(400).json({ error: 'ID e resposta são obrigatórios.' });
+  // Validação do ID da interação
+  if (!id || isNaN(parseInt(id)) || parseInt(id) <= 0) {
+    return res.status(400).json({ error: 'ID da interação inválido' });
+  }
+
+  // Validação e sanitização da resposta
+  if (!answer || typeof answer !== 'string') {
+    return res.status(400).json({ error: 'Resposta é obrigatória' });
+  }
+
+  const sanitizedAnswer = InputValidator.sanitizeString(answer.trim());
+  if (sanitizedAnswer.length === 0) {
+    return res.status(400).json({ error: 'Resposta não pode estar vazia' });
+  }
+
+  if (sanitizedAnswer.length > 500) {
+    return res.status(400).json({ error: 'Resposta muito longa (máximo 500 caracteres)' });
   }
 
   try {
+    // Log de resposta para auditoria
+    console.log(`[AUDIT] Resposta de interação: UserID=${req.user.id}, InteractionID=${id}, IP=${req.ip}`);
+    
     // Verificar se a interação existe
     const existingInteraction = await prisma.interaction.findUnique({
       where: { id },
@@ -38,7 +56,7 @@ router.post('/interaction/answer', authenticateToken, checkSessionActivity, trac
     const interaction = await prisma.interaction.update({
       where: { id },
       data: { 
-        answer,
+        answer: sanitizedAnswer,
         answeredAt: new Date()
       },
     });
@@ -55,6 +73,14 @@ router.get('/hint/:id/interactions', async (req, res) => {
   try {
     const hintId = req.params.id;
     
+    // Validação do ID da dica
+    if (!hintId || isNaN(parseInt(hintId)) || parseInt(hintId) <= 0) {
+      return res.status(400).json({ error: 'ID da dica inválido' });
+    }
+
+    // Log de acesso a dica para auditoria
+    console.log(`[AUDIT] Acesso a dica: HintID=${hintId}, IP=${req.ip}`);
+    
     const hint = await prisma.hint.findUnique({
       where: { id: hintId },
       include: { admirer: true }
@@ -68,7 +94,8 @@ router.get('/hint/:id/interactions', async (req, res) => {
     
     const interactions = await prisma.interaction.findMany({
       where: { hintId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      take: 50 // Limitar resultados para performance
     });
     
     res.json(interactions);

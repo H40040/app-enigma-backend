@@ -1,7 +1,8 @@
 const express = require('express');
+const prisma = require('../lib/prisma');
+const { authenticateToken, trackUserActivity } = require('../middleware/authMiddleware');
+const InputValidator = require('../lib/validation');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
 
 // Get a specific message publicly (e.g., for recipients)
 router.get('/:id/public', async (req, res) => {
@@ -57,20 +58,65 @@ router.post('/', async (req, res) => {
     imageUrl
   } = req.body;
 
-  if (!senderId || !contactMethod || !content) {
-    return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
+  // Validação e sanitização do conteúdo da mensagem
+  const contentValidation = InputValidator.validateMessageContent(content);
+  if (!contentValidation.isValid) {
+    return res.status(400).json({ error: contentValidation.error });
+  }
+
+  // Validação do senderId
+  if (!senderId || typeof senderId !== 'string') {
+    return res.status(400).json({ error: 'ID do remetente é obrigatório' });
+  }
+
+  // Validação do método de contato
+  if (!contactMethod || !['email', 'phone', 'username'].includes(contactMethod)) {
+    return res.status(400).json({ error: 'Método de contato inválido' });
+  }
+
+  // Validação do email do destinatário se fornecido
+  let sanitizedEmail = null;
+  if (recipientEmail) {
+    const emailValidation = InputValidator.validateEmail(recipientEmail);
+    if (!emailValidation.isValid) {
+      return res.status(400).json({ error: `Email do destinatário: ${emailValidation.error}` });
+    }
+    sanitizedEmail = emailValidation.sanitized;
+  }
+
+  // Validação do telefone do destinatário se fornecido
+  let sanitizedPhone = null;
+  if (recipientPhone) {
+    const phoneValidation = InputValidator.validatePhone(recipientPhone);
+    if (!phoneValidation.isValid) {
+      return res.status(400).json({ error: `Telefone do destinatário: ${phoneValidation.error}` });
+    }
+    sanitizedPhone = phoneValidation.sanitized;
+  }
+
+  // Validação do nome de usuário do destinatário se fornecido
+  let sanitizedUsername = null;
+  if (recipientUsername) {
+    const usernameValidation = InputValidator.validateName(recipientUsername);
+    if (!usernameValidation.isValid) {
+      return res.status(400).json({ error: `Nome de usuário do destinatário: ${usernameValidation.error}` });
+    }
+    sanitizedUsername = usernameValidation.sanitized;
   }
 
   try {
+    // Log de criação de mensagem para auditoria
+    console.log(`[AUDIT] Criação de mensagem: SenderID=${senderId}, IP=${req.ip}`);
+    
     const message = await prisma.message.create({
       data: {
         senderId,
         recipientId: recipientId || null,
-        recipientUsername: recipientUsername || null,
-        recipientEmail: recipientEmail || null,
-        recipientPhone: recipientPhone || null,
+        recipientUsername: sanitizedUsername,
+        recipientEmail: sanitizedEmail,
+        recipientPhone: sanitizedPhone,
         contactMethod,
-        content,
+        content: contentValidation.sanitized,
         imageUrl: imageUrl || null,
       },
       include: {
@@ -88,8 +134,21 @@ router.post('/', async (req, res) => {
 router.post('/:id/reply', async (req, res) => {
   const { id } = req.params;
   const { content, fromRecipient } = req.body;
-  if (!content || typeof fromRecipient !== 'boolean') {
-    return res.status(400).json({ error: 'Conteúdo e origem da resposta são obrigatórios.' });
+  
+  // Validação do ID da mensagem
+  if (!id || typeof id !== 'string') {
+    return res.status(400).json({ error: 'ID da mensagem inválido' });
+  }
+
+  // Validação e sanitização do conteúdo da resposta
+  const contentValidation = InputValidator.validateMessageContent(content);
+  if (!contentValidation.isValid) {
+    return res.status(400).json({ error: contentValidation.error });
+  }
+
+  // Validação da origem da resposta
+  if (typeof fromRecipient !== 'boolean') {
+    return res.status(400).json({ error: 'Origem da resposta deve ser especificada' });
   }
   try {
     // Verifica se a mensagem existe
@@ -97,11 +156,14 @@ router.post('/:id/reply', async (req, res) => {
     if (!message) {
       return res.status(404).json({ error: 'Mensagem não encontrada.' });
     }
+    // Log de resposta para auditoria
+    console.log(`[AUDIT] Resposta a mensagem: MessageID=${id}, FromRecipient=${fromRecipient}, IP=${req.ip}`);
+    
     // Cria a resposta
     const reply = await prisma.reply.create({
       data: {
         messageId: id,
-        content,
+        content: contentValidation.sanitized,
         fromRecipient,
       },
     });

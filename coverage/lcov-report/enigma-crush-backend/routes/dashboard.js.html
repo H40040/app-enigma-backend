@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">35% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/20</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.84% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/19</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -99,78 +99,75 @@
 <a name='L34'></a><a href='#L34'>34</a>
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">// backend/routes/dashboard.js
+<span class="cline-any cline-yes">10x</span></td><td class="text"><pre class="prettyprint lang-js">// backend/routes/dashboard.js
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const router = express.Router();
-const prisma = new PrismaClient();
-const authenticateToken = require('../middleware/authMiddleware');
+const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../middleware/authMiddleware');
 &nbsp;
 // Aplicar middleware de autenticação
-router.get('/dashboard', authenticateToken, <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  const { hintsFor } = <span class="cstat-no" title="statement not covered" >req.query;</span>
+router.get('/dashboard', authenticateToken, checkSessionActivity, trackUserActivity, async (req, res) =&gt; {
+  const { hintsFor } = req.query;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  if (!hintsFor) {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ error: 'Parâmetro hintsFor é obrigatório.' });</span>
+  if (!hintsFor) {
+    return res.status(400).json({ error: 'Parâmetro hintsFor é obrigatório.' });
   }
 &nbsp;
   // Verificar se o usuário tem permissão para acessar essas dicas
-<span class="cstat-no" title="statement not covered" >  if (req.user.email !== hintsFor &amp;&amp; !req.user.isAdmin) {</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(403).json({ error: 'Acesso negado' });</span>
+  if (req.user.email !== hintsFor &amp;&amp; !req.user.isAdmin) {
+    return res.status(403).json({ error: 'Acesso negado' });
   }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const admirer = <span class="cstat-no" title="statement not covered" >await prisma.admirer.findUnique({ where: { email: hintsFor } });</span>
-<span class="cstat-no" title="statement not covered" >    if (!admirer) <span class="cstat-no" title="statement not covered" >return res.json([]);</span></span>
+  try {
+    const admirer = await prisma.admirer.findUnique({ where: { email: hintsFor } });
+    if (!admirer) return res.json([]);
 &nbsp;
-    const hints = <span class="cstat-no" title="statement not covered" >await prisma.hint.findMany({</span>
+    const hints = await prisma.hint.findMany({
       where: { admirerId: admirer.id },
       include: { interactions: true },
       orderBy: { createdAt: 'desc' } // Ordenar do mais recente para o mais antigo
     });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    res.json(hints);</span>
+    res.json(hints);
   } catch (err) {
-<span class="cstat-no" title="statement not covered" >    console.error('Erro no dashboard:', err);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: 'Erro interno ao buscar dados do painel.' });</span>
+    console.error('Erro no dashboard:', err);
+    res.status(500).json({ error: 'Erro interno ao buscar dados do painel.' });
   }
 });
 &nbsp;
@@ -181,7 +178,7 @@ module.exports = router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-20T21:55:12.982Z
+                at 2025-08-23T18:52:55.340Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

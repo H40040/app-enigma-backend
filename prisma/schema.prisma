@@ -39,6 +39,8 @@ model Hint {
   admirerId    String
   admirer      Admirer       @relation(fields: [admirerId], references: [id], onDelete: Cascade)
   interaction  Interaction[]
+  publicUrl    String?
+  qrCodeUrl    String?
   createdAt    DateTime      @default(now())
 }
 
