@@ -1,0 +1,122 @@
+{
+  "timestamp": "2025-08-31T06:04:07.775Z",
+  "config": {
+    "frontend": {
+      "url": "http://localhost:8080",
+      "timeout": 10000
+    },
+    "backend": {
+      "url": "http://localhost:3001",
+      "timeout": 10000
+    },
+    "database": {
+      "url": "",
+      "timeout": 5000
+    },
+    "testUser": {
+      "email": "test@enigmacrush.com",
+      "password": "TestPassword123!",
+      "name": "Test User Production"
+    }
+  },
+  "results": {
+    "passed": 2,
+    "failed": 6,
+    "warnings": 1,
+    "tests": [
+      {
+        "name": "Frontend Health Check",
+        "success": false,
+        "message": "",
+        "details": "AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"
+      },
+      {
+        "name": "Backend Health Check",
+        "success": false,
+        "message": "Health check falhou (503)",
+        "details": {
+          "statusCode": 503,
+          "data": {
+            "status": "unhealthy",
+            "timestamp": "2025-08-31T06:04:07.639Z",
+            "error": "\nInvalid `prisma.$queryRaw()` invocation:\n\n\nerror: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.\n  -->  schema.prisma:12\n   | \n11 |   provider = \"postgresql\"\n12 |   url      = env(\"DATABASE_URL\")\n   | \n\nValidation Error Count: 1"
+          }
+        }
+      },
+      {
+        "name": "Database Connectivity",
+        "success": false,
+        "message": "Teste de database falhou (503)",
+        "details": {
+          "statusCode": 503
+        }
+      },
+      {
+        "name": "User Registration",
+        "success": false,
+        "message": "Registro falhou (400)",
+        "details": {
+          "statusCode": 400,
+          "data": {
+            "error": "Data de nascimento é obrigatória"
+          }
+        }
+      },
+      {
+        "name": "User Login",
+        "success": false,
+        "message": "Login falhou (500)",
+        "details": {
+          "statusCode": 500,
+          "data": {
+            "error": "Erro interno no servidor"
+          }
+        }
+      },
+      {
+        "name": "Protected Endpoint",
+        "success": false,
+        "message": "Token de autenticação não disponível",
+        "details": {
+          "reason": "Login test failed or not executed"
+        }
+      },
+      {
+        "name": "CORS Configuration",
+        "success": true,
+        "message": "CORS configurado corretamente",
+        "details": {
+          "origin": "http://localhost:8080",
+          "methods": "GET,POST,PUT,DELETE,OPTIONS"
+        }
+      },
+      {
+        "name": "Security Headers",
+        "success": true,
+        "message": "Headers de segurança configurados",
+        "details": {
+          "x-content-type-options": "nosniff",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0",
+          "strict-transport-security": "max-age=15552000; includeSubDomains"
+        }
+      },
+      {
+        "name": "Rate Limiting",
+        "warning": true,
+        "message": "Rate limiting pode não estar configurado",
+        "details": {
+          "blocked": 0,
+          "total": 15
+        }
+      }
+    ]
+  },
+  "summary": {
+    "total": 9,
+    "passed": 2,
+    "warnings": 1,
+    "failed": 6,
+    "successRate": 22.2
+  }
+}

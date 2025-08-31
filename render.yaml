@@ -1,0 +1,86 @@
+services:
+  - type: web
+    name: enigma-crush-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /health
+    numInstances: 1
+    
+    # Environment Variables
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4006
+      - key: DATABASE_URL
+        fromDatabase:
+          name: enigma-crush-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BCRYPT_ROUNDS
+        value: "12"
+      - key: CORS_ORIGIN
+        value: "https://your-frontend-domain.vercel.app"
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "100"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: API_KEY_SECRET
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: LOG_LEVEL
+        value: "info"
+      - key: ENABLE_SWAGGER
+        value: "false"
+      - key: ENABLE_METRICS
+        value: "true"
+      - key: PRISMA_QUERY_ENGINE_LIBRARY
+        value: "/app/node_modules/.prisma/client/libquery_engine-linux-musl.so.node"
+    
+    # Build settings
+    buildCommand: |
+      npm ci --only=production
+      npx prisma generate
+      npx prisma migrate deploy
+    
+    # Start command
+    startCommand: npm run start:prod
+    
+    # Auto-deploy settings
+    autoDeploy: true
+    
+    # Scaling settings
+    scaling:
+      minInstances: 1
+      maxInstances: 3
+      targetCPUPercent: 70
+      targetMemoryPercent: 80
+
+databases:
+  - name: enigma-crush-db
+    databaseName: enigma_crush
+    user: enigma_user
+    plan: free
+    region: oregon
+    version: "15"
+    
+    # Database settings
+    ipAllowList: []
+    
+    # Backup settings
+    backup:
+      enabled: true
+      schedule: "0 2 * * *"  # Daily at 2 AM
+      retention: 7  # Keep 7 days of backups

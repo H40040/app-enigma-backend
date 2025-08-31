@@ -1,80 +1,166 @@
+// Schema Prisma para PostgreSQL - Produção
 generator client {
   provider = "prisma-client-js"
 }
 
+// Configuração de seed
+// Para executar: npx prisma db seed
+// Ou: npm run db:seed
+
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  name      String
-  birthdate DateTime
-  cpf       String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  lastLogin DateTime?
+  id        String    @id @default(uuid()) @db.Uuid
+  email     String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  name      String    @db.VarChar(100)
+  birthdate DateTime  @db.Date
+  cpf       String    @unique @db.VarChar(14)
+  whatsapp  String?   @db.VarChar(20)
+  createdAt DateTime  @default(now()) @db.Timestamptz
+  updatedAt DateTime  @default(now()) @updatedAt @db.Timestamptz
+  lastLogin DateTime? @db.Timestamptz
   isAdmin   Boolean   @default(false)
   admirers  Admirer[]
-  whatsapp   String?
+
+  @@map("users")
+  @@index([email])
+  @@index([cpf])
+  @@index([createdAt])
 }
 
 model Admirer {
-  id        String   @id @default(uuid())
-  userId    String
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   hints     Hint[]
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@map("admirers")
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Hint {
-  id           String        @id @default(uuid())
-  content      String
-  type         String        @default("text")
+  id           String        @id @default(uuid()) @db.Uuid
+  content      String        @db.Text
+  type         String        @default("text") @db.VarChar(50)
   views        Int           @default(0)
   interactions Int           @default(0)
-  admirerId    String
+  admirerId    String        @db.Uuid
   admirer      Admirer       @relation(fields: [admirerId], references: [id], onDelete: Cascade)
   interaction  Interaction[]
-  publicUrl    String?
-  qrCodeUrl    String?
-  createdAt    DateTime      @default(now())
+  createdAt    DateTime      @default(now()) @db.Timestamptz
+
+  @@map("hints")
+  @@index([admirerId])
+  @@index([type])
+  @@index([createdAt])
 }
 
 model Interaction {
-  id         String    @id @default(uuid())
-  content    String
-  answer     String?
-  hintId     String
+  id         String    @id @default(uuid()) @db.Uuid
+  content    String    @db.Text
+  answer     String?   @db.Text
+  hintId     String    @db.Uuid
   hint       Hint      @relation(fields: [hintId], references: [id], onDelete: Cascade)
-  createdAt  DateTime  @default(now())
-  answeredAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz
+  answeredAt DateTime? @db.Timestamptz
+
+  @@map("interactions")
+  @@index([hintId])
+  @@index([createdAt])
+  @@index([answeredAt])
 }
 
 model Message {
-  id                String   @id @default(uuid())
-  senderId          String
-  recipientId       String?
-  recipientUsername String?
-  recipientEmail    String?
-  recipientPhone    String?
-  contactMethod     String
-  content           String
-  imageUrl          String?
-  createdAt         DateTime @default(now())
+  id                String   @id @default(uuid()) @db.Uuid
+  senderId          String   @db.Uuid
+  recipientId       String?  @db.Uuid
+  recipientUsername String?  @db.VarChar(100)
+  recipientEmail    String?  @db.VarChar(255)
+  recipientPhone    String?  @db.VarChar(20)
+  contactMethod     String   @db.VarChar(50)
+  content           String   @db.Text
+  imageUrl          String?  @db.VarChar(500)
+  createdAt         DateTime @default(now()) @db.Timestamptz
   isRead            Boolean  @default(false)
   views             Int      @default(0)
   replies           Reply[]
+
+  @@map("messages")
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([recipientEmail])
+  @@index([createdAt])
+  @@index([isRead])
 }
 
 model Reply {
-  id           String   @id @default(uuid())
-  messageId    String
-  message      Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  content      String
-  createdAt    DateTime @default(now())
+  id            String   @id @default(uuid()) @db.Uuid
+  messageId     String   @db.Uuid
+  message       Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  content       String   @db.Text
+  createdAt     DateTime @default(now()) @db.Timestamptz
   fromRecipient Boolean  @default(false)
+
+  @@map("replies")
+  @@index([messageId])
+  @@index([createdAt])
+}
+
+// Tabela para logs de auditoria
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  action    String   @db.VarChar(100)
+  details   String   @db.Text
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@map("audit_logs")
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([ipAddress])
+}
+
+// Tabela para sessões de usuário
+model UserSession {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid
+  sessionToken String    @unique @db.VarChar(255)
+  ipAddress    String?   @db.VarChar(45)
+  userAgent    String?   @db.Text
+  createdAt    DateTime  @default(now()) @db.Timestamptz
+  lastActivity DateTime  @default(now()) @db.Timestamptz
+  expiresAt    DateTime  @db.Timestamptz
+  isActive     Boolean   @default(true)
+
+  @@map("user_sessions")
+  @@index([userId])
+  @@index([sessionToken])
+  @@index([expiresAt])
+  @@index([isActive])
+  @@index([lastActivity])
+}
+
+// Tabela para rate limiting
+model RateLimit {
+  id          String   @id @default(uuid()) @db.Uuid
+  identifier  String   @db.VarChar(255) // IP + User-Agent ou User ID
+  action      String   @db.VarChar(100) // login, register, etc.
+  attempts    Int      @default(1)
+  windowStart DateTime @default(now()) @db.Timestamptz
+  expiresAt   DateTime @db.Timestamptz
+
+  @@map("rate_limits")
+  @@unique([identifier, action])
+  @@index([identifier])
+  @@index([action])
+  @@index([expiresAt])
 }

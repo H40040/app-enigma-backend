@@ -1,0 +1,196 @@
+# Artillery Load Testing Configuration for Enigma Crush Backend
+# Este arquivo define os testes de performance para o backend
+
+config:
+  target: 'http://localhost:4006'  # URL base do backend (será sobrescrita no CI/CD)
+  phases:
+    # Fase 1: Aquecimento
+    - duration: 30
+      arrivalRate: 2
+      name: "Warm up phase"
+    
+    # Fase 2: Carga normal
+    - duration: 60
+      arrivalRate: 5
+      name: "Normal load"
+    
+    # Fase 3: Pico de carga
+    - duration: 30
+      arrivalRate: 10
+      name: "Peak load"
+    
+    # Fase 4: Stress test
+    - duration: 30
+      arrivalRate: 15
+      name: "Stress test"
+  
+  # Configurações de timeout e retry
+  timeout: 30
+  
+  # Métricas e relatórios
+  ensure:
+    p95: 500  # 95% das requisições devem responder em menos de 500ms
+    p99: 1000 # 99% das requisições devem responder em menos de 1s
+    maxErrorRate: 5  # Máximo 5% de erro
+  
+  # Configurações de payload
+  payload:
+    path: "./test-data.csv"
+    fields:
+      - "email"
+      - "password"
+      - "name"
+    order: sequence
+    skipHeader: true
+  
+  # Variáveis globais
+  variables:
+    apiVersion: "v1"
+    contentType: "application/json"
+
+# Cenários de teste
+scenarios:
+  # Cenário 1: Health Check (peso 20%)
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
+      
+      - think: 1  # Pausa de 1 segundo
+  
+  # Cenário 2: Autenticação (peso 30%)
+  - name: "Authentication Flow"
+    weight: 30
+    flow:
+      # Tentar login (deve falhar sem credenciais)
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test@example.com"
+            password: "wrongpassword"
+          expect:
+            - statusCode: [400, 401]
+      
+      - think: 2
+      
+      # Verificar endpoint de registro
+      - post:
+          url: "/api/auth/register"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+            name: "{{ name }}"
+            cpf: "12345678901"
+            whatsapp: "11999999999"
+          expect:
+            - statusCode: [200, 201, 400, 409]
+  
+  # Cenário 3: Endpoints protegidos (peso 25%)
+  - name: "Protected Endpoints"
+    weight: 25
+    flow:
+      # Tentar acessar perfil sem autenticação
+      - get:
+          url: "/api/users/me"
+          expect:
+            - statusCode: [401, 403]
+      
+      - think: 1
+      
+      # Tentar acessar dashboard sem autenticação
+      - get:
+          url: "/api/dashboard"
+          expect:
+            - statusCode: [401, 403]
+      
+      - think: 1
+      
+      # Tentar acessar hints sem autenticação
+      - get:
+          url: "/api/hints"
+          expect:
+            - statusCode: [401, 403]
+  
+  # Cenário 4: Validação de dados (peso 15%)
+  - name: "Data Validation"
+    weight: 15
+    flow:
+      # Testar validação de CPF
+      - post:
+          url: "/api/validate/cpf"
+          json:
+            cpf: "invalid-cpf"
+          expect:
+            - statusCode: [400, 422]
+      
+      - think: 1
+      
+      # Testar validação de WhatsApp
+      - post:
+          url: "/api/validate/whatsapp"
+          json:
+            whatsapp: "invalid-phone"
+          expect:
+            - statusCode: [400, 422]
+  
+  # Cenário 5: Rate Limiting (peso 10%)
+  - name: "Rate Limiting Test"
+    weight: 10
+    flow:
+      # Fazer múltiplas requisições rapidamente para testar rate limiting
+      - loop:
+          count: 10
+          over:
+            - get:
+                url: "/api/auth/login"
+                expect:
+                  - statusCode: [200, 400, 401, 429]  # 429 = Too Many Requests
+        
+        # Pausa entre loops
+        - think: 0.1
+
+# Configurações específicas para diferentes ambientes
+environments:
+  # Ambiente de desenvolvimento
+  development:
+    target: 'http://localhost:4006'
+    phases:
+      - duration: 30
+        arrivalRate: 2
+  
+  # Ambiente de staging
+  staging:
+    target: 'https://enigma-crush-backend-staging.onrender.com'
+    phases:
+      - duration: 60
+        arrivalRate: 5
+  
+  # Ambiente de produção
+  production:
+    target: 'https://enigma-crush-backend.onrender.com'
+    phases:
+      - duration: 120
+        arrivalRate: 3
+    ensure:
+      p95: 300
+      p99: 800
+      maxErrorRate: 2
+
+# Plugins para relatórios avançados
+plugins:
+  expect: {}
+  metrics-by-endpoint: {}
+  
+# Configurações de relatório
+reporting:
+  # Salvar métricas em arquivo JSON
+  json:
+    output: "./artillery-report.json"
+  
+  # Gerar relatório HTML
+  html:
+    output: "./artillery-report.html"
