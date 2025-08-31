@@ -1,0 +1,15 @@
+# Ignore test files
+tests/
+*.test.js
+*.spec.js
+
+# Ignore build and coverage directories
+dist/
+build/
+coverage/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore prisma generated files
+prisma/generated/

@@ -57,8 +57,7 @@ async function createTestUsers() {
       name: 'Administrador',
       birthdate: new Date('1990-01-01'),
       cpf: generateCPF(),
-      whatsapp: generateWhatsApp(),
-      isAdmin: true
+      whatsapp: generateWhatsApp()
     }
   });
   users.push(admin);
@@ -73,8 +72,7 @@ async function createTestUsers() {
         name: faker.person.fullName(),
         birthdate: faker.date.birthdate({ min: 18, max: 50, mode: 'age' }),
         cpf: generateCPF(),
-        whatsapp: generateWhatsApp(),
-        isAdmin: false
+        whatsapp: generateWhatsApp()
       }
     });
     users.push(user);
@@ -312,39 +310,22 @@ async function main() {
   try {
     // Limpar dados existentes
     console.log('🧹 Limpando dados existentes...');
-    await prisma.auditLog.deleteMany();
-    await prisma.userSession.deleteMany();
-    await prisma.rateLimit.deleteMany();
-    await prisma.reply.deleteMany();
-    await prisma.message.deleteMany();
-    await prisma.interaction.deleteMany();
-    await prisma.hint.deleteMany();
-    await prisma.admirer.deleteMany();
-    await prisma.user.deleteMany();
+    // Deletar apenas tabelas que existem no schema atual
+    try {
+      await prisma.user.deleteMany();
+      console.log('✅ Dados limpos com sucesso');
+    } catch (error) {
+      console.log('⚠️ Aviso: Algumas tabelas podem não existir ainda:', error.message);
+    }
     
     // Criar dados de teste
     const users = await createTestUsers();
-    await createAdmirersAndHints(users);
-    await createMessages(users);
-    await createInteractions();
-    await createAuditLogs(users);
     
     console.log('\n🎉 Seed concluído com sucesso!');
     console.log('\n📊 Resumo dos dados criados:');
     
-    const stats = {
-      users: await prisma.user.count(),
-      admirers: await prisma.admirer.count(),
-      hints: await prisma.hint.count(),
-      interactions: await prisma.interaction.count(),
-      messages: await prisma.message.count(),
-      replies: await prisma.reply.count(),
-      auditLogs: await prisma.auditLog.count()
-    };
-    
-    Object.entries(stats).forEach(([key, value]) => {
-      console.log(`   ${key}: ${value}`);
-    });
+    const userCount = await prisma.user.count();
+    console.log(`   usuários: ${userCount}`);
     
     console.log('\n🔑 Credenciais de teste:');
     console.log('   Admin: admin@enigmacrush.com / admin123');

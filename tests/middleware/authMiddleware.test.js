@@ -61,9 +61,7 @@ describe('AuthMiddleware', () => {
       authenticateToken(req, res, next);
 
       expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith({
-        error: 'Token inválido'
-      });
+      expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
       expect(next).not.toHaveBeenCalled();
     });
 
@@ -91,7 +89,7 @@ describe('AuthMiddleware', () => {
     authenticateToken(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
+     expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -101,7 +99,7 @@ describe('AuthMiddleware', () => {
     authenticateToken(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
+     expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -158,7 +156,7 @@ describe('trackUserActivity', () => {
     await trackUserActivity(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
+     expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -189,7 +187,7 @@ describe('checkSessionActivity', () => {
 
   beforeEach(() => {
     req = {
-      user: { id: '1', email: 'test@example.com' }
+      user: { id: '550e8400-e29b-41d4-a716-446655440000', email: 'test@example.com' }
     };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -233,8 +231,8 @@ describe('checkSessionActivity', () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({ error: 'Usuário não encontrado' });
-    expect(next).not.toHaveBeenCalled();
-  });
+     expect(next).not.toHaveBeenCalled();
+   });
 
   it('deve lidar com erro de banco de dados', async () => {
     prisma.user.findUnique.mockRejectedValue(new Error('Database error'));

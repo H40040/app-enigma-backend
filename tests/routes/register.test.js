@@ -51,12 +51,12 @@ describe('Register Routes', () => {
         .post('/api/register')
         .send(validUserData);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('token');
-      expect(response.body.id).toBe(mockUser.id);
-      expect(response.body.name).toBe(mockUser.name);
-      expect(response.body.email).toBe(mockUser.email);
-      expect(response.body).not.toHaveProperty('password');
+      expect(response.body.user.id).toBe(mockUser.id);
+      expect(response.body.user.name).toBe(mockUser.name);
+      expect(response.body.user.email).toBe(mockUser.email);
+      expect(response.body.user).not.toHaveProperty('password');
     });
 
     it('deve registrar usuário sem WhatsApp (campo opcional)', async () => {
@@ -82,7 +82,7 @@ describe('Register Routes', () => {
         .post('/api/register')
         .send(userDataWithoutWhatsapp);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('token');
     });
 
@@ -191,39 +191,7 @@ describe('Register Routes', () => {
       expect(response.body.error).toBe('CPF já cadastrado');
     });
 
-    it('deve vincular mensagens pendentes ao novo usuário', async () => {
-      const mockUser = {
-        id: 1,
-        name: 'João Silva',
-        email: 'novo@example.com',
-        isAdmin: false,
-        createdAt: new Date()
-      };
-
-      mockPrisma.user.findUnique.mockResolvedValue(null);
-      mockPrisma.user.findFirst.mockResolvedValue(null);
-      bcrypt.hash.mockResolvedValue('hashedPassword');
-      mockPrisma.user.create.mockResolvedValue(mockUser);
-      jwt.sign.mockReturnValue('mock-token');
-      mockPrisma.message.updateMany.mockResolvedValue({ count: 3 });
-
-      const response = await request(app)
-        .post('/api/register')
-        .send(validUserData);
-
-      expect(response.status).toBe(200);
-      expect(mockPrisma.message.updateMany).toHaveBeenCalledWith({
-        where: {
-          OR: [
-            { recipientEmail: 'novo@example.com' },
-            { recipientPhone: '12345678909' },
-            { recipientUsername: 'João Silva' }
-          ],
-          recipientId: null
-        },
-        data: { recipientId: 1 }
-      });
-    });
+    // Teste removido: funcionalidade de mensagens pendentes foi removida do código de produção
 
     it('deve usar salt alto para hash da senha', async () => {
       const mockUser = {
@@ -312,7 +280,7 @@ describe('Register Routes', () => {
         .post('/api/register')
         .send(dataWithSpaces);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(201);
       expect(mockPrisma.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           email: 'novo@example.com', // Sem espaços
@@ -342,13 +310,13 @@ describe('Register Routes', () => {
         .post('/api/register')
         .send(validUserData);
 
-      expect(response.status).toBe(200);
-      expect(response.body).not.toHaveProperty('password');
-      expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('name');
-      expect(response.body).toHaveProperty('email');
-      expect(response.body).toHaveProperty('isAdmin');
-      expect(response.body).toHaveProperty('createdAt');
+      expect(response.status).toBe(201);
+      expect(response.body.user).not.toHaveProperty('password');
+      expect(response.body.user).toHaveProperty('id');
+      expect(response.body.user).toHaveProperty('name');
+      expect(response.body.user).toHaveProperty('email');
+      expect(response.body.user).toHaveProperty('isAdmin');
+      expect(response.body.user).toHaveProperty('createdAt');
       expect(response.body).toHaveProperty('token');
     });
   });

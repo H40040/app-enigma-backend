@@ -128,6 +128,36 @@ class ProductionValidator {
       tests: []
     };
     this.authToken = null;
+    this.testEmail = `test-${Date.now()}-${Math.random().toString(36).substring(7)}@enigmacrush.com`;
+    this.testCpf = this.generateValidCPF();
+  }
+
+  generateValidCPF() {
+    // Gera os 9 primeiros dígitos aleatoriamente
+    const digits = [];
+    for (let i = 0; i < 9; i++) {
+      digits.push(Math.floor(Math.random() * 10));
+    }
+
+    // Calcula o primeiro dígito verificador
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += digits[i] * (10 - i);
+    }
+    let firstDigit = 11 - (sum % 11);
+    if (firstDigit >= 10) firstDigit = 0;
+    digits.push(firstDigit);
+
+    // Calcula o segundo dígito verificador
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+      sum += digits[i] * (11 - i);
+    }
+    let secondDigit = 11 - (sum % 11);
+    if (secondDigit >= 10) secondDigit = 0;
+    digits.push(secondDigit);
+
+    return digits.join('');
   }
 
   async runTest(name, testFn) {
@@ -264,7 +294,6 @@ class ProductionValidator {
   // Teste 4: User Registration
   async testUserRegistration() {
     const registerUrl = `${config.backend.url}/api/register`;
-    const testEmail = `test-${Date.now()}@enigmacrush.com`;
     
     const response = await makeRequest(registerUrl, {
       method: 'POST',
@@ -272,9 +301,11 @@ class ProductionValidator {
         'Content-Type': 'application/json'
       },
       body: {
-        email: testEmail,
+        email: this.testEmail,
         password: config.testUser.password,
-        name: config.testUser.name
+        name: config.testUser.name,
+        birthdate: '1990-01-01',
+        cpf: this.testCpf
       },
       timeout: config.backend.timeout
     });
@@ -283,7 +314,7 @@ class ProductionValidator {
       return {
         success: true,
         message: 'Registro de usuário funcionando',
-        details: { email: testEmail, userId: response.data.user?.id }
+        details: { email: this.testEmail, userId: response.data.user?.id }
       };
     } else {
       return {
@@ -304,18 +335,18 @@ class ProductionValidator {
         'Content-Type': 'application/json'
       },
       body: {
-        email: config.testUser.email,
+        email: this.testEmail,
         password: config.testUser.password
       },
       timeout: config.backend.timeout
     });
 
-    if (response.statusCode === 200 && response.data && response.data.token) {
-      this.authToken = response.data.token;
+    if (response.statusCode === 200 && response.data && response.data.accessToken) {
+      this.authToken = response.data.accessToken;
       return {
         success: true,
         message: 'Login funcionando',
-        details: { hasToken: !!response.data.token }
+        details: { hasToken: !!response.data.accessToken }
       };
     } else {
       return {
@@ -336,7 +367,7 @@ class ProductionValidator {
       };
     }
 
-    const profileUrl = `${config.backend.url}/api/user/profile`;
+    const profileUrl = `${config.backend.url}/api/auth/profile`;
     
     const response = await makeRequest(profileUrl, {
       headers: {
@@ -466,11 +497,6 @@ class ProductionValidator {
 
   // Executar todos os testes
   async runAllTests() {
-    console.log(`${colors.magenta}🚀 Iniciando Validação de Produção - Enigma Crush${colors.reset}\n`);
-    
-    log.info(`Frontend URL: ${config.frontend.url}`);
-    log.info(`Backend URL: ${config.backend.url}`);
-    log.info(`Test User: ${config.testUser.email}\n`);
 
     // Executar testes em sequência
     await this.runTest('Frontend Health Check', () => this.testFrontendHealth());
@@ -534,6 +560,20 @@ class ProductionValidator {
 
 // Executar validação se chamado diretamente
 if (require.main === module) {
+  // Processar argumentos da linha de comando
+  const args = process.argv.slice(2);
+  
+  if (args.length >= 2) {
+    config.frontend.url = args[0];
+    config.backend.url = args[1];
+  }
+  
+  // Mostrar configuração atual
+  console.log(`${colors.cyan}🧪 Iniciando Validação de Produção - Enigma Crush${colors.reset}\n`);
+  console.log(`${colors.blue}ℹ️  Frontend URL: ${config.frontend.url}${colors.reset}`);
+  console.log(`${colors.blue}ℹ️  Backend URL: ${config.backend.url}${colors.reset}`);
+  console.log(`${colors.blue}ℹ️  Test User: ${config.testUser.email}${colors.reset}\n`);
+  
   const validator = new ProductionValidator();
   validator.runAllTests().catch(error => {
     log.error(`Erro fatal na validação: ${error.message}`);

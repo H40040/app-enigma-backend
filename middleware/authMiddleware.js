@@ -86,8 +86,9 @@ const checkSessionActivity = async (req, res, next) => {
   if (req.user && req.user.id) {
     try {
       // Validar ID do usuário
-      const userId = parseInt(req.user.id);
-      if (isNaN(userId) || userId <= 0) {
+      const userId = req.user.id;
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!userId || typeof userId !== 'string' || !uuidRegex.test(userId)) {
         console.log(`[AUDIT] ID de usuário inválido na verificação de sessão: ${req.user.id}`);
         return res.status(401).json({ error: 'Token inválido' });
       }

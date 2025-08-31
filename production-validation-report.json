@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-08-31T06:04:07.775Z",
+  "timestamp": "2025-08-31T15:55:27.414Z",
   "config": {
     "frontend": {
-      "url": "http://localhost:8080",
+      "url": "http://localhost:3000",
       "timeout": 10000
     },
     "backend": {
-      "url": "http://localhost:3001",
+      "url": "http://localhost:3004",
       "timeout": 10000
     },
     "database": {
@@ -20,9 +20,9 @@
     }
   },
   "results": {
-    "passed": 2,
-    "failed": 6,
-    "warnings": 1,
+    "passed": 6,
+    "failed": 1,
+    "warnings": 2,
     "tests": [
       {
         "name": "Frontend Health Check",
@@ -32,62 +32,86 @@
       },
       {
         "name": "Backend Health Check",
-        "success": false,
-        "message": "Health check falhou (503)",
+        "success": true,
+        "message": "Backend saudável (uptime: 29.3151734)",
         "details": {
-          "statusCode": 503,
-          "data": {
-            "status": "unhealthy",
-            "timestamp": "2025-08-31T06:04:07.639Z",
-            "error": "\nInvalid `prisma.$queryRaw()` invocation:\n\n\nerror: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.\n  -->  schema.prisma:12\n   | \n11 |   provider = \"postgresql\"\n12 |   url      = env(\"DATABASE_URL\")\n   | \n\nValidation Error Count: 1"
-          }
+          "status": "healthy",
+          "timestamp": "2025-08-31T15:55:25.614Z",
+          "uptime": 29.3151734,
+          "memory": {
+            "used": 34,
+            "total": 36
+          },
+          "environment": "test",
+          "version": "1.0.0"
         }
       },
       {
         "name": "Database Connectivity",
-        "success": false,
-        "message": "Teste de database falhou (503)",
+        "success": true,
+        "message": "Database conectado via health check",
         "details": {
-          "statusCode": 503
+          "status": "healthy",
+          "timestamp": "2025-08-31T15:55:25.629Z",
+          "uptime": 29.329576,
+          "memory": {
+            "used": 34,
+            "total": 36
+          },
+          "environment": "test",
+          "version": "1.0.0"
         }
       },
       {
         "name": "User Registration",
-        "success": false,
-        "message": "Registro falhou (400)",
+        "success": true,
+        "message": "Registro de usuário funcionando",
         "details": {
-          "statusCode": 400,
-          "data": {
-            "error": "Data de nascimento é obrigatória"
-          }
+          "email": "test-1756655725535-lrb8w@enigmacrush.com",
+          "userId": "89e70916-c073-4a85-b658-77447653eead"
         }
       },
       {
         "name": "User Login",
-        "success": false,
-        "message": "Login falhou (500)",
+        "success": true,
+        "message": "Login funcionando",
         "details": {
-          "statusCode": 500,
-          "data": {
-            "error": "Erro interno no servidor"
-          }
+          "hasToken": true
         }
       },
       {
         "name": "Protected Endpoint",
-        "success": false,
-        "message": "Token de autenticação não disponível",
-        "details": {
-          "reason": "Login test failed or not executed"
-        }
+        "success": true,
+        "message": "Endpoints protegidos funcionando",
+        "details": {}
       },
       {
         "name": "CORS Configuration",
-        "success": true,
-        "message": "CORS configurado corretamente",
+        "warning": true,
+        "message": "CORS pode não estar configurado corretamente",
         "details": {
-          "origin": "http://localhost:8080",
-          "methods": "GET,POST,PUT,DELETE,OPTIONS"
+          "corsHeaders": {
+            "content-security-policy": "default-src 'self';script-src 'self' 'unsafe-inline' 'unsafe-eval';style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;font-src 'self' https://fonts.gstatic.com;img-src 'self' data: blob:;connect-src 'self' http://localhost:3000;base-uri 'self';form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+            "cross-origin-opener-policy": "same-origin",
+            "cross-origin-resource-policy": "cross-origin",
+            "origin-agent-cluster": "?1",
+            "referrer-policy": "no-referrer",
+            "strict-transport-security": "max-age=15552000; includeSubDomains",
+            "x-content-type-options": "nosniff",
+            "x-dns-prefetch-control": "off",
+            "x-download-options": "noopen",
+            "x-frame-options": "SAMEORIGIN",
+            "x-permitted-cross-domain-policies": "none",
+            "x-xss-protection": "0",
+            "vary": "Origin",
+            "access-control-allow-credentials": "true",
+            "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
+            "access-control-allow-headers": "Content-Type,Accept,Authorization",
+            "content-length": "0",
+            "date": "Sun, 31 Aug 2025 15:55:26 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=5"
+          }
         }
       },
       {
@@ -114,9 +138,9 @@
   },
   "summary": {
     "total": 9,
-    "passed": 2,
-    "warnings": 1,
-    "failed": 6,
-    "successRate": 22.2
+    "passed": 6,
+    "warnings": 2,
+    "failed": 1,
+    "successRate": 66.7
   }
 }

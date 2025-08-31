@@ -91,29 +91,22 @@ router.post('/register', authLimiter, async (req, res) => {
       { expiresIn: TOKEN_EXPIRATION }
     );
 
-    // Vincula mensagens "pendentes" ao novo usuário usando valores sanitizados
-    await prisma.message.updateMany({
-      where: {
-        OR: [
-          { recipientEmail: sanitizedEmail },
-          { recipientPhone: sanitizedCpf },
-          { recipientUsername: sanitizedName }
-        ],
-        recipientId: null
-      },
-      data: { recipientId: user.id }
-    });
+    // TODO: Implementar sistema de mensagens pendentes quando necessário
+    // (Removido código incompatível com schema atual do Prisma)
 
     // Log de auditoria (sem dados sensíveis)
     console.log(`[AUDIT] Novo usuário registrado: ID=${user.id}, Email=${sanitizedEmail}`);
 
     // Nunca retorne a senha do usuário
-    res.json({ 
-      id: user.id, 
-      name: user.name, 
-      email: user.email, 
-      isAdmin: user.isAdmin, 
-      createdAt: user.createdAt,
+    res.status(201).json({ 
+      success: true,
+      user: {
+        id: user.id, 
+        name: user.name, 
+        email: user.email, 
+        isAdmin: user.isAdmin, 
+        createdAt: user.createdAt
+      },
       token 
     });
   } catch (error) {

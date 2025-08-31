@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: enigma-crush-backend-dev
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    branch: develop
+    healthCheckPath: /health
+    numInstances: 1
+    
+    # Environment Variables for Development
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: PORT
+        value: 4007
+      - key: DATABASE_URL
+        fromDatabase:
+          name: enigma-crush-db-dev
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BCRYPT_ROUNDS
+        value: "10"
+      - key: CORS_ORIGIN
+        value: "https://enigma-crush-frontend-dev.vercel.app"
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "300000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "200"
+      - key: DEBUG
+        value: "true"
+      - key: LOG_LEVEL
+        value: "debug"
+
+databases:
+  - name: enigma-crush-db-dev
+    databaseName: enigma_crush_dev
+    user: enigma_user_dev
+    plan: free
+    region: oregon
