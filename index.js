@@ -172,6 +172,34 @@ app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'API online' });
 });
 
+// Health check endpoint for monitoring
+app.get('/api/health', async (req, res) => {
+  try {
+    // Quick database check
+    await prisma.$queryRaw`SELECT 1`;
+    
+    const healthStatus = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      memory: {
+        used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+        total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
+      },
+      environment: process.env.NODE_ENV || 'development',
+      version: require('./package.json').version
+    };
+    
+    res.status(200).json(healthStatus);
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: error.message
+    });
+  }
+});
+
 // Middleware global de tratamento de erros
 app.use((err, req, res, next) => {
   console.error('Erro global:', err);

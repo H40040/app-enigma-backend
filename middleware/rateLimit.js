@@ -14,8 +14,8 @@ const authLimiter = rateLimit({
   skipSuccessfulRequests: true, // Não contar requests bem-sucedidos
   skipFailedRequests: false,
   skip: (req) => {
-    // Pular rate limiting durante os testes
-    return process.env.NODE_ENV === 'test';
+    // Pular rate limiting durante os testes e desenvolvimento
+    return process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development' || !process.env.NODE_ENV;
   },
   keyGenerator: (req) => {
     // Usar IP + User-Agent para melhor identificação

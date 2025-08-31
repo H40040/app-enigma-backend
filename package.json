@@ -5,7 +5,10 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
+        "start:prod": "NODE_ENV=production node index.js",
         "dev": "nodemon index.js",
+        "build": "npm run lint && npm run test && npm run prisma:generate",
+        "build:prod": "NODE_ENV=production npm run build && npm run db:deploy",
         "prisma:generate": "npx prisma generate",
         "migrate": "npx prisma migrate dev",
         "migrate:reset": "node prisma/migrations/fix_migrations.js",
@@ -14,7 +17,10 @@
         "fix-prisma": "node scripts/fix-prisma.js",
         "install:deps": "node scripts/install-deps.js",
         "lint": "eslint . --ext .js",
+        "lint:fix": "eslint . --ext .js --fix",
         "test": "jest --config jest.config.js",
+        "test:coverage": "jest --config jest.config.js --coverage",
+        "test:prod": "NODE_ENV=test npm run test:coverage",
         "db:setup": "node scripts/setup-postgresql.js",
         "db:migrate": "node scripts/migrate-to-postgresql.js",
         "db:backup": "node -e \"require('./scripts/migrate-to-postgresql.js').backupSQLiteData()\"",
@@ -23,7 +29,11 @@
         "db:reset": "npx prisma migrate reset",
         "db:deploy": "npx prisma migrate deploy",
         "db:seed": "npx prisma db seed",
-        "postinstall": "npx prisma generate"
+        "postinstall": "npx prisma generate",
+        "health-check": "node scripts/health-check.js",
+        "security-audit": "npm audit --audit-level moderate",
+        "docker:build": "docker build -t enigma-crush-backend .",
+        "docker:run": "docker run -p 4006:4006 enigma-crush-backend"
     },
     "dependencies": {
         "@faker-js/faker": "^9.8.0",

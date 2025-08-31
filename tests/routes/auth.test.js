@@ -27,6 +27,21 @@ jest.mock('jsonwebtoken', () => ({
   verify: jest.fn()
 }));
 
+// Mock do authMiddleware
+const mockAuthMiddleware = {
+  authenticateToken: jest.fn((req, res, next) => {
+    req.user = { id: 1 };
+    next();
+  }),
+  trackUserActivity: jest.fn((req, res, next) => {
+    next();
+  }),
+  checkSessionActivity: jest.fn((req, res, next) => {
+    next();
+  })
+};
+jest.mock('../../middleware/authMiddleware', () => mockAuthMiddleware);
+
 // Importar o app DEPOIS dos mocks
 const app = require('../../index');
 
@@ -149,7 +164,7 @@ describe('Auth Routes', () => {
 
     it('deve retornar 401 para token inválido', async () => {
       jwt.verify.mockImplementation(() => {
-        throw new Error('Token inválido');
+        throw new Error('Invalid token');
       });
 
       const response = await request(app)
@@ -159,13 +174,85 @@ describe('Auth Routes', () => {
       expect(response.status).toBe(403);
     });
 
-    it('deve retornar 401 para usuário não encontrado', async () => {
-      jwt.verify.mockReturnValue({ userId: 999 });
+    it('deve renovar tokens com sucesso', async () => {
+      const mockUser = {
+        id: 1,
+        name: 'João Silva',
+        email: 'joao@example.com'
+      };
+
+      jwt.verify.mockReturnValue({ id: 1 });
+      mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+      jwt.sign.mockReturnValue('new-token');
+
+      const response = await request(app)
+        .post('/api/auth/refresh-token')
+        .send({ refreshToken: 'valid-refresh-token' });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty('refreshToken');
+    });
+
+    it('deve retornar 404 para usuário não encontrado no refresh', async () => {
+      jwt.verify.mockReturnValue({ id: 999 });
       mockPrisma.user.findUnique.mockResolvedValue(null);
 
       const response = await request(app)
         .post('/api/auth/refresh-token')
-        .send({ refreshToken: 'valid-token' });
+        .send({ refreshToken: 'valid-refresh-token' });
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe('Usuário não encontrado');
+    });
+  });
+
+  // Testes para GET /api/auth/profile
+  describe('GET /api/auth/profile', () => {
+    it('deve retornar perfil do usuário autenticado', async () => {
+      const mockUser = {
+        id: 1,
+        name: 'João Silva',
+        email: 'joao@example.com',
+        isAdmin: false,
+        createdAt: new Date()
+      };
+
+      // Mock do middleware de autenticação
+      // Mock já configurado globalmente
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 1 };
+        next();
+      });
+      mockAuthMiddleware.checkSessionActivity.mockImplementation((req, res, next) => next());
+      mockAuthMiddleware.trackUserActivity.mockImplementation((req, res, next) => next());
+
+      mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+
+      const response = await request(app)
+        .get('/api/auth/profile')
+        .set('Authorization', 'Bearer valid-token');
+
+      expect(response.status).toBe(200);
+      expect(response.body.user).toHaveProperty('id');
+      expect(response.body.user).toHaveProperty('name');
+      expect(response.body.user).not.toHaveProperty('password');
+    });
+
+    it('deve retornar 404 para usuário não encontrado no profile', async () => {
+      const mockAuthMiddleware = require('../../middleware/authMiddleware');
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 999 };
+        next();
+      });
+      mockAuthMiddleware.checkSessionActivity.mockImplementation((req, res, next) => next());
+      mockAuthMiddleware.trackUserActivity.mockImplementation((req, res, next) => next());
+
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      const response = await request(app)
+        .get('/api/auth/profile')
+        .set('Authorization', 'Bearer valid-token');
 
       expect(response.status).toBe(404);
     });
@@ -175,35 +262,141 @@ describe('Auth Routes', () => {
   describe('POST /api/auth/logout', () => {
     it('deve fazer logout com sucesso', async () => {
       const response = await request(app)
-        .post('/api/auth/logout')
-        .send({});
+        .post('/api/auth/logout');
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Logout realizado com sucesso');
     });
   });
 
-  // Testes para GET /api/auth/profile
-  describe('GET /api/auth/profile', () => {
-    it('deve retornar 401 sem token', async () => {
-      const response = await request(app)
-        .get('/api/auth/profile');
-
-      expect(response.status).toBe(401);
-    });
-  });
-
   // Testes para POST /api/auth/change-password
   describe('POST /api/auth/change-password', () => {
-    it('deve retornar 401 sem token', async () => {
+    it('deve retornar 400 se senha atual estiver incorreta', async () => {
+      // Mock já configurado globalmente
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 1 };
+        next();
+      });
+      mockAuthMiddleware.checkSessionActivity.mockImplementation((req, res, next) => next());
+      mockAuthMiddleware.trackUserActivity.mockImplementation((req, res, next) => next());
+
       const response = await request(app)
         .post('/api/auth/change-password')
+        .set('Authorization', 'Bearer valid-token')
+        .send({}); // Sem campos obrigatórios
+
+      expect(response.status).toBe(400);
+    });
+
+    it('deve retornar 404 se usuário não encontrado', async () => {
+      // Mock já configurado globalmente
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 999 };
+        next();
+      });
+      mockAuthMiddleware.checkSessionActivity.mockImplementation((req, res, next) => next());
+      mockAuthMiddleware.trackUserActivity.mockImplementation((req, res, next) => next());
+
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      const response = await request(app)
+        .post('/api/auth/change-password')
+        .set('Authorization', 'Bearer valid-token')
         .send({
-          currentPassword: 'OldPassword123!',
-          newPassword: 'NewPassword123!'
+          currentPassword: 'SenhaAtual123!',
+          newPassword: 'NovaSenha123!'
         });
 
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe('Usuário não encontrado');
+    });
+
+    it('deve retornar 400 para senha atual incorreta', async () => {
+      const mockUser = {
+        id: 1,
+        password: 'hashedPassword'
+      };
+
+      // Mock já configurado globalmente
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 1 };
+        next();
+      });
+
+      mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+      bcrypt.compare.mockResolvedValue(false); // Senha incorreta
+
+      const response = await request(app)
+        .post('/api/auth/change-password')
+        .set('Authorization', 'Bearer valid-token')
+        .send({
+          currentPassword: 'senhaErrada',
+          newPassword: 'NovaSenha123!'
+        });
+      
       expect(response.status).toBe(401);
+      expect(response.body.error).toBe('Senha atual incorreta');
+    });
+
+    it('deve alterar senha com sucesso', async () => {
+      const mockUser = {
+        id: 1,
+        password: 'hashedPassword'
+      };
+
+      // Mock já configurado globalmente
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 1 };
+        next();
+      });
+      mockAuthMiddleware.checkSessionActivity.mockImplementation((req, res, next) => next());
+      mockAuthMiddleware.trackUserActivity.mockImplementation((req, res, next) => next());
+
+      mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+      bcrypt.compare
+        .mockResolvedValueOnce(true)  // Primeira chamada: senha atual correta
+        .mockResolvedValueOnce(false); // Segunda chamada: nova senha é diferente
+      bcrypt.hash.mockResolvedValue('newHashedPassword');
+      mockPrisma.user.update.mockResolvedValue({ ...mockUser, password: 'newHashedPassword' });
+
+      const response = await request(app)
+        .post('/api/auth/change-password')
+        .set('Authorization', 'Bearer valid-token')
+        .send({
+          currentPassword: 'SenhaAtual123!',
+          newPassword: 'NovaSenha123!'
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Senha alterada com sucesso');
+      expect(bcrypt.hash).toHaveBeenCalledWith('NovaSenha123!', 12);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { password: 'newHashedPassword' }
+      });
+    });
+
+    it('deve retornar erro 500 em caso de falha no banco de dados', async () => {
+      // Mock já configurado globalmente
+      mockAuthMiddleware.authenticateToken.mockImplementation((req, res, next) => {
+        req.user = { id: 1 };
+        next();
+      });
+      mockAuthMiddleware.checkSessionActivity.mockImplementation((req, res, next) => next());
+      mockAuthMiddleware.trackUserActivity.mockImplementation((req, res, next) => next());
+
+      mockPrisma.user.findUnique.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app)
+        .post('/api/auth/change-password')
+        .set('Authorization', 'Bearer valid-token')
+        .send({
+          currentPassword: 'SenhaAtual123!',
+          newPassword: 'NovaSenha123!'
+        });
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erro interno no servidor ao alterar senha');
     });
   });
 });
