@@ -48,7 +48,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000']
+      connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000', 'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app']
     }
   },
   crossOriginEmbedderPolicy: false, // For compatibility with external resources
@@ -64,7 +64,7 @@ app.use(hpp()); // Prevent HTTP Parameter Pollution
 
 // Configuração de CORS mais segura
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL, 'http://192.168.1.91:3000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:8081', 'http://127.0.0.1:8081'],
+  origin: [process.env.FRONTEND_URL, 'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 'http://192.168.1.91:3000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:8081', 'http://127.0.0.1:8081'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
