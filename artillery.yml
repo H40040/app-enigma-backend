@@ -164,14 +164,14 @@ environments:
   
   # Ambiente de staging
   staging:
-    target: 'https://enigma-crush-backend-staging.onrender.com'
+    target: 'https://app-enigma-backend.onrender.com'
     phases:
       - duration: 60
         arrivalRate: 5
   
   # Ambiente de produção
   production:
-    target: 'https://enigma-crush-backend.onrender.com'
+    target: 'https://app-enigma-backend.onrender.com'
     phases:
       - duration: 120
         arrivalRate: 3

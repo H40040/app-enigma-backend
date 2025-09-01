@@ -5,7 +5,7 @@
 
 set -e
 
-echo "íº€ Iniciando deploy para ambiente de desenvolvimento..."
+echo "ï¿½ï¿½ï¿½ Iniciando deploy para ambiente de desenvolvimento..."
 
 # Cores para output
 RED='\033[0;31m'
@@ -93,9 +93,9 @@ sleep 60
 
 log_info "Validando deploy..."
 if node scripts/health-check.js; then
-    log_success "Deploy de desenvolvimento concluÃ­do com sucesso! í¾‰"
-    log_info "Backend Dev: https://enigma-crush-backend-dev.onrender.com"
-    log_info "Frontend Dev: https://enigma-crush-frontend-dev.vercel.app"
+    log_success "Deploy de desenvolvimento concluÃ­do com sucesso! ï¿½ï¿½ï¿½"
+    log_info "Backend Dev: https://app-enigma-backend.onrender.com"
+    log_info "Frontend Dev: https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app"
 else
     log_error "Falha na validaÃ§Ã£o do deploy. Verifique os logs do Render."
     exit 1

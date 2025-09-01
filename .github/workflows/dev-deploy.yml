@@ -15,7 +15,7 @@ env:
 jobs:
   # Job 1: Testes do Backend
   backend-tests:
-    name: í·ª Backend Tests (Dev)
+    name: ï¿½ï¿½ï¿½ Backend Tests (Dev)
     runs-on: ubuntu-latest
     
     services:
@@ -34,37 +34,37 @@ jobs:
           - 5432:5432
     
     steps:
-      - name: í³¥ Checkout code
+      - name: ï¿½ï¿½ï¿½ Checkout code
         uses: actions/checkout@v4
       
-      - name: í¿¢ Setup Node.js
+      - name: ï¿½ï¿½ï¿½ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       
-      - name: í³¦ Install dependencies
+      - name: ï¿½ï¿½ï¿½ Install dependencies
         run: npm ci
       
-      - name: í´§ Setup test environment
+      - name: ï¿½ï¿½ï¿½ Setup test environment
         run: |
           cp .env.development .env.test
           echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/enigma_crush_dev_test" >> .env.test
       
-      - name: í·„ï¸ Run database migrations
+      - name: ï¿½ï¿½ï¿½ï¸ Run database migrations
         run: |
           npx prisma generate
           npx prisma db push
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/enigma_crush_dev_test
       
-      - name: í·ª Run tests
+      - name: ï¿½ï¿½ï¿½ Run tests
         run: npm run test:ci
         env:
           NODE_ENV: test
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/enigma_crush_dev_test
       
-      - name: í³Š Upload coverage reports
+      - name: ï¿½ï¿½ï¿½ Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage/lcov.info
@@ -79,10 +79,10 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     
     steps:
-      - name: í³¥ Checkout code
+      - name: ï¿½ï¿½ï¿½ Checkout code
         uses: actions/checkout@v4
       
-      - name: íº€ Deploy to Render (Dev)
+      - name: ï¿½ï¿½ï¿½ Deploy to Render (Dev)
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
           service-id: ${{ secrets.RENDER_SERVICE_ID_DEV }}
@@ -96,26 +96,26 @@ jobs:
     needs: deploy-backend-dev
     
     steps:
-      - name: í³¥ Checkout code
+      - name: ï¿½ï¿½ï¿½ Checkout code
         uses: actions/checkout@v4
       
-      - name: í¿¢ Setup Node.js
+      - name: ï¿½ï¿½ï¿½ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
       
-      - name: í³¦ Install dependencies
+      - name: ï¿½ï¿½ï¿½ Install dependencies
         run: npm ci
       
-      - name: í´ Health Check
+      - name: ï¿½ï¿½ï¿½ Health Check
         run: |
           sleep 30  # Aguarda o serviÃ§o inicializar
           node scripts/health-check.js
         env:
-          API_URL: https://enigma-crush-backend-dev.onrender.com
+          API_URL: https://app-enigma-backend.onrender.com/api
       
-      - name: í·ª Run production validation
+      - name: ï¿½ï¿½ï¿½ Run production validation
         run: node scripts/validate-production.js
         env:
-          API_URL: https://enigma-crush-backend-dev.onrender.com
+          API_URL: https://app-enigma-backend.onrender.com/api
           NODE_ENV: development

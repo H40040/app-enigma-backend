@@ -36,7 +36,7 @@ O pipeline de CI/CD automatiza:
 
 ### Contas e Serviços
 - [x] Conta no GitHub
-- [x] Conta no Render
+- [x] Conta no 
 - [x] Conta no Supabase (para database)
 - [x] Repositório configurado
 
