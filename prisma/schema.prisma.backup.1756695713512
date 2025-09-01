@@ -1,0 +1,106 @@
+// Schema Prisma para SQLite - Desenvolvimento/Testes
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Configuração de seed
+// Para executar: npx prisma db seed
+// Ou: npm run db:seed
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  password     String
+  name         String
+  birthdate    DateTime
+  cpf          String?   @unique
+  whatsapp     String?
+  lastActivity DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relacionamentos
+  sentMessages     Message[]     @relation("SentMessages")
+  receivedMessages Message[]     @relation("ReceivedMessages")
+  sentHints        Hint[]        @relation("SentHints")
+  receivedHints    Hint[]        @relation("ReceivedHints")
+  interactions     Interaction[]
+  refreshTokens    RefreshToken[]
+
+  @@map("users")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  senderId   String
+  receiverId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relacionamentos
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Hint {
+  id         String   @id @default(uuid())
+  content    String
+  senderId   String
+  receiverId String
+  imageUrl   String?
+  videoUrl   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relacionamentos
+  sender   User @relation("SentHints", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedHints", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("hints")
+}
+
+model Interaction {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // 'like', 'dislike', 'view', etc.
+  targetId  String   // ID do usuário alvo
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("interactions")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model ValidationCode {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  type      String   // 'email_verification', 'password_reset'
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("validation_codes")
+}
