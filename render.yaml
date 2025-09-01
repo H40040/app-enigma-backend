@@ -6,7 +6,7 @@ services:
     dockerContext: .
     plan: free
     region: oregon
-    branch: main
+    branch: develop
     healthCheckPath: /health
     numInstances: 1
     
