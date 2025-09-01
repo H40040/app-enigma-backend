@@ -4,6 +4,7 @@
 # production
 /build
 /dist
+/coverage
 
 # uploads folder (arquivos de usuários)
 /uploads/*
