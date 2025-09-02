@@ -53,9 +53,8 @@ services:
     
     # Build settings
     buildCommand: |
-      npm ci --only=production
+      npm install
       npx prisma generate
-      npx prisma migrate deploy
     
     # Start command
     startCommand: npm start

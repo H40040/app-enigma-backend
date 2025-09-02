@@ -2,9 +2,9 @@
     "name": "enigma-crush-backend",
     "version": "1.0.0",
     "description": "Backend para o Enigma Crush",
-    "main": "test-server.js",
+    "main": "index.js",
     "scripts": {
-        "start": "node test-server.js",
+        "start": "node index.js",
         "start:prod": "cross-env NODE_ENV=production node index.js",
         "dev": "nodemon index.js",
         "build": "npm run test && npm run db:migrate && echo 'Build completed'",
