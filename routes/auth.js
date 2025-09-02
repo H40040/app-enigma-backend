@@ -40,7 +40,33 @@ const generateTokens = (user) => {
 };
 
 router.post('/verify-user', async (req, res) => {
-  const { email, password } = req.body;
+  console.log('[DEBUG] Raw req.body:', req.body);
+  console.log('[DEBUG] Body type:', typeof req.body);
+  
+  let email, password;
+  
+  // Tratar diferentes formatos de body
+  if (typeof req.body === 'string') {
+    try {
+      // Se o body é uma string, tentar fazer parse JSON
+      const parsed = JSON.parse(req.body);
+      email = parsed.email;
+      password = parsed.password;
+    } catch (e) {
+      // Se não conseguir fazer parse, pode ser que seja apenas o email como string
+      console.log('[DEBUG] Failed to parse body as JSON:', e.message);
+      return res.status(400).json({ error: 'Formato de dados inválido' });
+    }
+  } else if (typeof req.body === 'object' && req.body !== null) {
+    // Body já é um objeto
+    email = req.body.email;
+    password = req.body.password;
+  } else {
+    return res.status(400).json({ error: 'Dados não fornecidos' });
+  }
+  
+  console.log('[DEBUG] Extracted email:', email);
+  console.log('[DEBUG] Extracted password type:', typeof password);
 
   // Validação e sanitização de inputs
   const emailValidation = InputValidator.validateEmail(email);
