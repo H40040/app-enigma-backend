@@ -1,26 +1,26 @@
 # --- Dockerfile ---
+# Backend Node.js puro + Prisma
 
-# Usar Node 22.12.0
 FROM node:22.12.0
 
-# Definir diretório de trabalho
-WORKDIR /usr/src/app/enigma-crush-backend
+# Diretório de trabalho
+WORKDIR /app
 
-# Copiar arquivos de dependências primeiro (cache eficiente)
+# Copiar dependências primeiro (cache eficiente)
 COPY package*.json ./
 
-# Instalar dependências
-RUN npm ci && npx prisma generate && npx prisma migrate deploy
-
+# Instalar dependências (produção)
+RUN npm ci --omit=dev --no-audit --progress=false
 
 # Copiar código fonte
 COPY . .
 
-# Build (ajuste se for backend puro ou fullstack)
-RUN npm start
+# Gerar cliente Prisma e aplicar migrações
+RUN npx prisma generate
+RUN npx prisma migrate deploy
 
-# Expor a porta que o backend usa
-EXPOSE 3000
+# Expor porta da API
+EXPOSE 4006
 
-# Rodar o backend em produção
+# Start do servidor
 CMD ["npm", "start"]
