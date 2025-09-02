@@ -10,13 +10,14 @@ WORKDIR /usr/src/app/enigma-crush-backend
 COPY package*.json ./
 
 # Instalar dependências
-RUN npm ci
+RUN npm ci && npx prisma generate && npx prisma migrate deploy
+
 
 # Copiar código fonte
 COPY . .
 
 # Build (ajuste se for backend puro ou fullstack)
-RUN npm ci && npx prisma generate && npx prisma migrate deploy
+RUN npm start
 
 # Expor a porta que o backend usa
 EXPOSE 3000
