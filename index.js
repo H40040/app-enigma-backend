@@ -85,14 +85,14 @@ app.get('/api/protected', authenticateToken, checkSessionActivity, trackUserActi
   res.json({ message: 'Acesso autorizado', user: req.user });
 });
 
-// Setup CSRF protection (except for auth routes that need special handling)
-const csrfProtection = csurf({ 
-  cookie: { 
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  }
-});
+// CSRF Protection - TEMPORARILY DISABLED FOR DEBUGGING
+// const csrfProtection = csurf({ 
+//   cookie: { 
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === 'production',
+//     sameSite: 'strict'
+//   }
+// });
 
 // Rotas importadas
 app.use('/api/health', healthRoutes); // Health check first - sem rate limiting
