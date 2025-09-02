@@ -58,7 +58,7 @@ services:
       npx prisma migrate deploy
     
     # Start command
-    startCommand: npm run start:prod
+    startCommand: npm start
     
     # Auto-deploy settings
     autoDeploy: true
