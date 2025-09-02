@@ -48,4 +48,4 @@ ENV NODE_ENV=production
 ENV PORT=4006
 
 # Start the application
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "start"]
