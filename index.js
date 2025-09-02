@@ -179,6 +179,16 @@ app.get('/', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'API online' });
 });
 
+// Endpoint POST de teste direto no index.js
+app.post('/api/direct-test', (req, res) => {
+  console.log('[DEBUG] Direct test endpoint hit');
+  res.json({ 
+    message: 'Direct POST test successful', 
+    body: req.body,
+    timestamp: new Date().toISOString() 
+  });
+});
+
 // Health check endpoint moved to routes/health.js
 
 // Middleware global de tratamento de erros
