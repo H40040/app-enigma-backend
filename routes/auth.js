@@ -69,7 +69,15 @@ router.post('/verify-user', async (req, res) => {
   console.log('[DEBUG] Extracted password type:', typeof password);
 
   // Validação e sanitização de inputs
-  const emailValidation = InputValidator.validateEmail(email);
+  let emailValidation;
+  try {
+    emailValidation = InputValidator.validateEmail(email);
+    console.log('[DEBUG] Email validation result:', emailValidation);
+  } catch (validationError) {
+    console.error('[ERROR] Email validation failed:', validationError);
+    return res.status(500).json({ error: 'Erro na validação de email', details: validationError.message });
+  }
+  
   if (!emailValidation.isValid) {
     return res.status(400).json({ error: emailValidation.error });
   }
