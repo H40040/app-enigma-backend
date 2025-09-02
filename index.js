@@ -63,7 +63,7 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET)); // Para processar cookies
 app.use(mongoSanitize()); // Prevent NoSQL Injection
 app.use(xss()); // Clean user input
-app.use(hpp()); // Prevent HTTP Parameter Pollution
+// app.use(hpp()); // Prevent HTTP Parameter Pollution - TEMPORARIAMENTE REMOVIDO PARA DEBUG
 
 // Configuração de CORS mais segura
 const corsOptions = {
