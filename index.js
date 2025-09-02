@@ -116,6 +116,16 @@ app.post('/api/direct-test', (req, res) => {
   });
 });
 
+// Endpoint POST de teste SEM prefixo /api/ para verificar se o problema é específico do prefixo
+app.post('/test-no-api', (req, res) => {
+  console.log('[DEBUG] Test without /api/ prefix hit');
+  res.json({ 
+    message: 'POST test without /api/ prefix successful', 
+    body: req.body,
+    timestamp: new Date().toISOString() 
+  });
+});
+
 // Rate limiter geral aplicado após health routes
 app.use('/api/', customApiLimiter); // Rate limiter geral
 
