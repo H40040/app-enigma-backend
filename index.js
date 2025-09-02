@@ -117,8 +117,8 @@ app.post('/test-no-api', (req, res) => {
   });
 });
 
-// Rate limiter geral aplicado após health routes
-app.use('/api/', customApiLimiter); // Rate limiter geral
+// Rate limiter geral aplicado após health routes - TEMPORARILY DISABLED FOR DEBUGGING
+// app.use('/api/', customApiLimiter); // Rate limiter geral
 
 app.use('/api', register);
 app.use('/api/auth', auth); // Rota de autenticação
