@@ -48,13 +48,28 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000', 'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app']
+      connectSrc: ["'self'", process.env.FRONTEND_URL || 'https://app-enigma-frontend-git-develop-h40040s-projects.vercel.app','http://localhost:3000', 'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app']
     }
   },
   crossOriginEmbedderPolicy: false, // For compatibility with external resources
   crossOriginResourcePolicy: { policy: 'cross-origin' } // Allow cross-origin resource sharing
 })); 
 app.use(compression()); // Comprime as respostas
+// Debug middleware para capturar body raw
+app.use('/api/auth/verify-user', (req, res, next) => {
+  let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+  req.on('end', () => {
+    console.log('[DEBUG] Raw body received:', body);
+    console.log('[DEBUG] Content-Type:', req.headers['content-type']);
+    // Restaurar o body para o próximo middleware
+    req.body = body;
+    next();
+  });
+});
+
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET)); // Para processar cookies
