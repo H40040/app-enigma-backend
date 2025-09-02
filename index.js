@@ -59,13 +59,7 @@ app.use(compression()); // Comprime as respostas
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
-// Debug middleware para log do body após parsing
-app.use('/api/auth/verify-user', (req, res, next) => {
-  console.log('[DEBUG] Parsed body:', JSON.stringify(req.body));
-  console.log('[DEBUG] Content-Type:', req.headers['content-type']);
-  console.log('[DEBUG] Body type:', typeof req.body);
-  next();
-});
+// Debug middleware removido - pode estar causando erro 500
 app.use(cookieParser(process.env.COOKIE_SECRET)); // Para processar cookies
 app.use(mongoSanitize()); // Prevent NoSQL Injection
 app.use(xss()); // Clean user input
