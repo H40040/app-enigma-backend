@@ -72,6 +72,23 @@ router.post('/test-post', async (req, res) => {
    }
  });
 
+// Endpoint simples para testar POST sem rate limiting
+router.post('/simple-test', async (req, res) => {
+  try {
+    console.log('[DEBUG] Simple test endpoint hit');
+    console.log('[DEBUG] Body:', req.body);
+    
+    res.json({
+      message: 'Simple POST test successful',
+      body: req.body,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[ERROR] Simple test failed:', error);
+    res.status(500).json({ error: 'Simple test failed', details: error.message });
+  }
+});
+
 // Endpoint simples para testar auth sem validação complexa
 router.post('/test-auth', async (req, res) => {
   try {
