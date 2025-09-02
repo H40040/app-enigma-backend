@@ -82,8 +82,8 @@
         "xss-clean": "^0.1.4"
     },
     "engines": {
-        "node": ">=20.0.0",
-        "npm": ">=10.0.0"
+        "node": ">=20.19.0",
+        "npm": ">=10.8.2"
     },
     "prisma": {
         "seed": "node prisma/seed.js"
