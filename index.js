@@ -74,8 +74,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Aplicar rate limiters específicos
-app.use('/api/', customApiLimiter); // Rate limiter geral
+// Rate limiters - aplicar após as rotas de health para evitar conflitos
 app.use('/api/auth/login', authLimiter); // Rate limiter para login
 app.use('/api/register', authLimiter); // Rate limiter para registro
 app.use('/api/auth/change-password', passwordChangeLimiter); // Rate limiter para mudança de senha
@@ -105,7 +104,11 @@ const csrfProtection = csurf({
 });
 
 // Rotas importadas
-app.use('/api/health', healthRoutes); // Health check first
+app.use('/api/health', healthRoutes); // Health check first - sem rate limiting
+
+// Aplicar rate limiter geral após health routes
+app.use('/api/', customApiLimiter); // Rate limiter geral
+
 app.use('/api', register);
 app.use('/api/auth', auth); // Rota de autenticação
 app.use('/api', dashboard);
