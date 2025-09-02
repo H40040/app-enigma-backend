@@ -134,7 +134,10 @@ router.post('/verify-user', async (req, res) => {
     });
   } catch (error) {
     console.error('Erro na autenticação:', error);
-    res.status(500).json({ error: 'Erro interno no servidor' });
+    console.error('Stack trace:', error.stack);
+    console.error('Error message:', error.message);
+    console.error('Error name:', error.name);
+    res.status(500).json({ error: 'Erro interno no servidor', details: error.message });
   }
 });
 
