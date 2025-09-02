@@ -8,15 +8,5 @@
     "startCommand": "npm start",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
-  },
-  "environments": {
-    "production": {
-      "variables": {
-        "NODE_VERSION": "20.19.0",
-        "NPM_VERSION": "10.8.2",
-        "NODE_ENV": "production",
-        "FRONTEND_URL": "https://enigma-crush-frontend.vercel.app"
-      }
-    }
   }
 }
