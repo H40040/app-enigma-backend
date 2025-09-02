@@ -47,5 +47,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 ENV NODE_ENV=production
 ENV PORT=4006
 
-# Start the application
-CMD ["npm", "start"]
+# Run database migrations and start the application
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
