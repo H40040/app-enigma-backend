@@ -72,4 +72,31 @@ router.post('/test-post', async (req, res) => {
    }
  });
 
+// Endpoint simples para testar auth sem validação complexa
+router.post('/test-auth', async (req, res) => {
+  try {
+    console.log('[DEBUG] Test auth endpoint hit');
+    console.log('[DEBUG] Body:', req.body);
+    
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+    }
+    
+    // Test basic database query
+    const userCount = await prisma.user.count();
+    
+    res.json({
+      message: 'Test auth successful',
+      email: email,
+      userCount: userCount,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[ERROR] Test auth failed:', error);
+    res.status(500).json({ error: 'Test auth failed', details: error.message });
+  }
+});
+
 module.exports = router;
