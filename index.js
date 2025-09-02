@@ -192,6 +192,18 @@ app.get('/', (req, res) => {
 
 // Health check endpoint moved to routes/health.js
 
+// Middleware para capturar rotas não encontradas (404)
+app.use((req, res, next) => {
+  console.log(`[404 DEBUG] Route not found: ${req.method} ${req.url}`);
+  console.log(`[404 DEBUG] Available routes logged above`);
+  res.status(404).json({
+    error: 'Route not found',
+    method: req.method,
+    url: req.url,
+    message: `Cannot ${req.method} ${req.url}`
+  });
+});
+
 // Middleware global de tratamento de erros
 app.use((err, req, res, next) => {
   console.error('Erro global:', err);
