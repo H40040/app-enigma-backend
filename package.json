@@ -86,7 +86,15 @@
         "npm": "10.9.0"
     },
     "prisma": {
-        "seed": "node prisma/seed.js"
+        "seed": "node prisma/seed.js",
+        "migrate": "npx prisma migrate dev",
+        "migrate:reset": "node prisma/migrations/fix_migrations.js",
+        "migrate:prod": "npx prisma migrate deploy",
+        "seed:prod": "npx prisma db seed",
+        "db:validate": "npx prisma migrate status && npx prisma validate",
+        "db:migrate:prod": "npx prisma migrate deploy",
+        "db:seed:prod": "npx prisma db seed",
+        "db:reset:prod": "npx prisma migrate reset"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",
