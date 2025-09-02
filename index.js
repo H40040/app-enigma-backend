@@ -106,7 +106,17 @@ const csrfProtection = csurf({
 // Rotas importadas
 app.use('/api/health', healthRoutes); // Health check first - sem rate limiting
 
-// Aplicar rate limiter geral após health routes
+// Endpoint POST de teste direto no index.js - ANTES do rate limiter
+app.post('/api/direct-test', (req, res) => {
+  console.log('[DEBUG] Direct test endpoint hit');
+  res.json({ 
+    message: 'Direct POST test successful', 
+    body: req.body,
+    timestamp: new Date().toISOString() 
+  });
+});
+
+// Rate limiter geral aplicado após health routes
 app.use('/api/', customApiLimiter); // Rate limiter geral
 
 app.use('/api', register);
@@ -176,17 +186,7 @@ app.post('/api/upload', authenticateToken, checkSessionActivity, trackUserActivi
 
 // Rota de saúde para testes automatizados
 app.get('/', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'API online' });
-});
-
-// Endpoint POST de teste direto no index.js
-app.post('/api/direct-test', (req, res) => {
-  console.log('[DEBUG] Direct test endpoint hit');
-  res.json({ 
-    message: 'Direct POST test successful', 
-    body: req.body,
-    timestamp: new Date().toISOString() 
-  });
+  res.json({ message: 'Enigma Crush Backend is running!' });
 });
 
 // Health check endpoint moved to routes/health.js
