@@ -44,4 +44,32 @@ router.get('/test', (req, res) => {
   });
 });
 
+// Test POST endpoint to debug verify-user issues
+router.post('/test-post', async (req, res) => {
+  try {
+    console.log('[DEBUG] Test POST - Body type:', typeof req.body);
+    console.log('[DEBUG] Test POST - Body content:', req.body);
+    console.log('[DEBUG] Test POST - Headers:', req.headers);
+    
+    // Test database connection
+    const userCount = await prisma.user.count();
+    
+    res.json({
+      message: 'POST test successful',
+      timestamp: new Date().toISOString(),
+      bodyType: typeof req.body,
+      bodyContent: req.body,
+      userCount: userCount,
+      database: 'connected'
+    });
+  } catch (error) {
+     console.error('[DEBUG] Test POST error:', error);
+     res.status(500).json({
+       error: 'Test POST failed',
+       message: error.message,
+       timestamp: new Date().toISOString()
+     });
+   }
+ });
+
 module.exports = router;
