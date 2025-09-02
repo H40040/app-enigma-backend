@@ -1,0 +1,77 @@
+# Railway ignore file - similar to .dockerignore
+
+# Development files
+.env.local
+.env.development
+.env.test
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+*.lcov
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Documentation
+README.md
+docs/
+
+# Git
+.git/
+.gitignore
+
+# SQLite (we're using PostgreSQL on Railway)
+*.db
+*.sqlite
+*.sqlite3
+prisma/dev.db*
+
+# Temporary files
+tmp/
+temp/
+
+# Build artifacts (if any)
+build/
+dist/
+
+# Docker files (Railway uses Nixpacks)
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Render specific files (we're migrating from Render)
+render.yaml
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+jest.config.js
+
+# Scripts that are not needed in production
+scripts/
+
+# Artillery performance test files
+artillery.yml

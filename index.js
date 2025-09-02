@@ -224,7 +224,12 @@ app.use((err, req, res, next) => {
 // Iniciar o servidor apenas se este arquivo for executado diretamente
 if (require.main === module) {
   const PORT = process.env.PORT || 4000;
-  app.listen(PORT, () => console.log(`Servidor backend rodando na porta ${PORT}`));
+  // Railway requires binding to 0.0.0.0 instead of localhost
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor backend rodando na porta ${PORT}`);
+    console.log(`Ambiente: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Database URL configurada: ${process.env.DATABASE_URL ? 'Sim' : 'Não'}`);
+  });
 }
 
 module.exports = app;
