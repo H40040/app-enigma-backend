@@ -42,17 +42,7 @@ const app = express();
 
 // Middlewares de segurança e performance
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'blob:'],
-      connectSrc: ["'self'", process.env.FRONTEND_URL || 'https://app-enigma-frontend-git-develop-h40040s-projects.vercel.app','http://localhost:3000', 'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app'],
-      formAction: ["'self'"] // Allow POST form submissions
-    }
-  },
+  contentSecurityPolicy: false, // Temporarily disable CSP to test POST endpoints
   crossOriginEmbedderPolicy: false, // For compatibility with external resources
   crossOriginResourcePolicy: { policy: 'cross-origin' } // Allow cross-origin resource sharing
 })); 
