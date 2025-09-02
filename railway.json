@@ -12,6 +12,14 @@
   "environments": {
     "production": {
       "variables": {
+        "NODE_VERSION": "20.11.0",
+        "NPM_VERSION": "10.2.4"
+      }
+    }
+  },
+  "environments": {
+    "production": {
+      "variables": {
         "NODE_ENV": "production",
         "FRONTEND_URL": "https://enigma-crush-frontend.vercel.app"
       }
