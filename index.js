@@ -25,6 +25,7 @@ const hintRoutes = require('./routes/hint');
 const userRoutes = require('./routes/user');
 const messageRoutes = require('./routes/message'); // Add this line
 const validateRoutes = require('./routes/validate');
+const healthRoutes = require('./routes/health');
 const { authenticateToken, trackUserActivity, checkSessionActivity } = require('./middleware/authMiddleware');
 const { authLimiter, passwordChangeLimiter, validationLimiter, apiLimiter: customApiLimiter, messageLimiter } = require('./middleware/rateLimit');
 
@@ -118,6 +119,7 @@ app.use('/api/hints', hintRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes); // Add this line
 app.use('/api', validateRoutes);
+app.use('/api/health', healthRoutes);
 
 // Configuração do multer com validações
 const storage = multer.diskStorage({
