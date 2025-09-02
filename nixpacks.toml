@@ -1,5 +1,5 @@
 [phases.setup]
-cmds = ['rm -rf node_modules/.cache || true']
+# Nada aqui, removeu o rm -rf
 
 [phases.install]
 cmds = ['npm ci --no-audit --progress=false']
