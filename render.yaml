@@ -1,73 +1,34 @@
 services:
   - type: web
     name: enigma-crush-backend
-    env: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    env: node
     plan: free
     region: oregon
     branch: develop
-    healthCheckPath: /health
-    numInstances: 1
     
-    # Environment Variables
+    # Environment variables
     envVars:
       - key: NODE_ENV
-        value: production
+        value: "production"
       - key: PORT
-        value: 4006
+        value: "4000"
       - key: DATABASE_URL
         fromDatabase:
           name: enigma-crush-db
           property: connectionString
+      - key: FRONTEND_URL
+        value: "https://enigma-crush-frontend.vercel.app"
       - key: JWT_SECRET
         generateValue: true
-      - key: BCRYPT_ROUNDS
-        value: "12"
-      - key: CORS_ORIGIN
-        value: "https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app"
-      - key: FORCE_REBUILD
-        value: "2025-01-01"
-      - key: RATE_LIMIT_WINDOW_MS
-        value: "900000"
-      - key: RATE_LIMIT_MAX_REQUESTS
-        value: "100"
-      - key: SESSION_SECRET
-        generateValue: true
-      - key: COOKIE_SECRET
-        generateValue: true
-      - key: ENCRYPTION_KEY
-        generateValue: true
-      - key: API_KEY_SECRET
-        generateValue: true
-      - key: WEBHOOK_SECRET
-        generateValue: true
-      - key: LOG_LEVEL
-        value: "info"
-      - key: ENABLE_SWAGGER
-        value: "false"
-      - key: ENABLE_METRICS
-        value: "true"
-      - key: PRISMA_QUERY_ENGINE_LIBRARY
-        value: "/app/node_modules/.prisma/client/libquery_engine-linux-musl.so.node"
     
     # Build settings
-    buildCommand: |
-      npm install
-      npx prisma generate
+    buildCommand: npm install
     
     # Start command
     startCommand: npm start
     
     # Auto-deploy settings
     autoDeploy: true
-    
-    # Scaling settings
-    scaling:
-      minInstances: 1
-      maxInstances: 3
-      targetCPUPercent: 70
-      targetMemoryPercent: 80
 
 databases:
   - name: enigma-crush-db
