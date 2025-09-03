@@ -4,7 +4,7 @@
 FROM node:22.12.0
 
 # Diretório de trabalho
-WORKDIR /enigma-crush-backend
+WORKDIR /
 
 # Copiar dependências primeiro (cache eficiente)
 COPY package*.json ./
