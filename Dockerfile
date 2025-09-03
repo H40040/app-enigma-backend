@@ -17,10 +17,10 @@ COPY . .
 
 # Gerar cliente Prisma e aplicar migrações
 RUN npx prisma generate --schema /app/prisma/schema.prisma
-RUN npx prisma migrate deploy --schema /app/prisma/schema.prisma
+RUN chmod +x entrypoint.sh
 
 # Expor porta da API
 EXPOSE 4006
 
 # Start do servidor
-CMD ["npm", "start"]
+CMD ["./entrypoint.sh"]
