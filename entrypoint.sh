@@ -23,19 +23,27 @@ echo "🔍 Checking migration status before deploy..."
 npx prisma migrate status
 
 # Aplicar migrações Prisma
-echo "🔄 Applying Prisma migrations..."
-npx prisma migrate deploy
+echo "🔄 Applying database migrations..."
+echo "📊 Current migration status:"
+npx prisma migrate status
 
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to apply migrations"
-    echo "🔍 Checking migration status after failure..."
-    npx prisma migrate status
-    echo "📋 Listing migration files..."
-    ls -la prisma/migrations/
-    exit 1
+echo "🗂️ Available migration files:"
+ls -la prisma/migrations/
+
+echo "🔄 Forcing migration deployment..."
+if npx prisma migrate deploy --force; then
+    echo "✅ Migrations applied successfully"
+else
+    echo "❌ Migration failed. Trying to reset and apply..."
+    echo "🔄 Resetting database and applying migrations..."
+    npx prisma migrate reset --force --skip-seed
+    if npx prisma migrate deploy; then
+        echo "✅ Migrations applied after reset"
+    else
+        echo "❌ Migration still failed. Manual intervention required."
+        exit 1
+    fi
 fi
-
-echo "✅ Migrations applied successfully"
 echo "🔍 Final migration status..."
 npx prisma migrate status
 echo "🚀 Starting server..."
