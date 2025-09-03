@@ -58,7 +58,20 @@ app.use(xss()); // Clean user input
 
 // Configuração de CORS mais segura
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL, 'https://app-enigma-frontend-git-develop-h40040s-projects.vercel.app','https://app-enigma-frontend-gysrr1xya-h40040s-projects.vercel.app', 'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app', 'http://192.168.1.91:3000', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:8081', 'http://127.0.0.1:8081'],
+  origin: [
+    process.env.FRONTEND_URL, 
+    'https://app-enigma-frontend.vercel.app',
+    'https://app-enigma-frontend-git-develop-h40040s-projects.vercel.app',
+    'https://app-enigma-frontend-gysrr1xya-h40040s-projects.vercel.app', 
+    'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 
+    'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app',
+    'https://enigma-crush-backend-develop.up.railway.app',
+    'http://192.168.1.91:3000', 
+    'http://localhost:8080', 
+    'http://127.0.0.1:8080', 
+    'http://localhost:8081', 
+    'http://127.0.0.1:8081'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization']
