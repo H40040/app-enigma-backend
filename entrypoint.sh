@@ -11,25 +11,33 @@ npx prisma --version
 
 # Gerar cliente Prisma
 echo "⚙️ Generating Prisma client..."
-npx prisma generate --schema /app/prisma/schema.prisma
+npx prisma generate
 
 if [ $? -ne 0 ]; then
     echo "❌ Failed to generate Prisma client"
     exit 1
 fi
 
+# Verificar status das migrações antes de aplicar
+echo "🔍 Checking migration status before deploy..."
+npx prisma migrate status
+
 # Aplicar migrações Prisma
 echo "🔄 Applying Prisma migrations..."
-npx prisma migrate deploy --schema /app/prisma/schema.prisma
+npx prisma migrate deploy
 
 if [ $? -ne 0 ]; then
     echo "❌ Failed to apply migrations"
-    echo "🔍 Checking migration status..."
-    npx prisma migrate status --schema /app/prisma/schema.prisma
+    echo "🔍 Checking migration status after failure..."
+    npx prisma migrate status
+    echo "📋 Listing migration files..."
+    ls -la prisma/migrations/
     exit 1
 fi
 
 echo "✅ Migrations applied successfully"
+echo "🔍 Final migration status..."
+npx prisma migrate status
 echo "🚀 Starting server..."
 
 # Iniciar o servidor
