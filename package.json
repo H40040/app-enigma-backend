@@ -53,8 +53,7 @@
         "quality:check": "npm run lint && npm run security-audit && npm run test:coverage",
         "validate:production": "node scripts/validate-production.js",
         "validate:prod": "npm run validate:production",
-        "precommit": "npm run lint:fix && npm run test",
-        "prepare": "npx prisma generate"
+        "precommit": "npm run lint:fix && npm run test"
     },
     "dependencies": {
         "@faker-js/faker": "^9.8.0",
