@@ -4,7 +4,7 @@
 FROM node:22.12.0
 
 # Diretório de trabalho
-WORKDIR /app
+WORKDIR /enigma-crush-backend
 
 # Copiar dependências primeiro (cache eficiente)
 COPY package*.json ./
@@ -16,8 +16,8 @@ RUN npm ci --omit=dev --no-audit --progress=false
 COPY . .
 
 # Gerar cliente Prisma e aplicar migrações
-RUN npx prisma generate
-RUN npx prisma migrate deploy
+RUN npx prisma generate --schema /prisma/schema.prisma
+RUN npx prisma migrate deploy --schema /prisma/schema.prisma
 
 # Expor porta da API
 EXPOSE 4006
