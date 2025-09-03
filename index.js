@@ -96,6 +96,7 @@ app.get('/api/protected', authenticateToken, checkSessionActivity, trackUserActi
 
 // Rotas importadas
 app.use('/api/health', healthRoutes); // Health check first - sem rate limiting
+app.use('/health', healthRoutes); // Health check também disponível em /health para Railway
 
 // Endpoint POST de teste direto no index.js - ANTES do rate limiter
 app.post('/api/direct-test', (req, res) => {
