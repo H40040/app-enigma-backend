@@ -34,7 +34,7 @@
         "db:reset": "npx prisma migrate reset",
         "db:deploy": "npx prisma migrate deploy",
         "db:seed": "npx prisma db seed",
-        "postinstall": "npx prisma generate",
+        
         "health-check": "node scripts/health-check.js",
         "security-audit": "npm audit --audit-level moderate",
         "security-check": "npm audit && npm run lint",
