@@ -143,6 +143,12 @@ router.post('/', async (req, res) => {
     console.log('- content:', contentValidation.sanitized?.length || 0, '/ unlimited');
     console.log('- imageUrl:', (imageUrl || '').length, '/ 500');
 
+    // Validar tamanho do imageUrl se fornecido
+    if (imageUrl && imageUrl.length > 500) {
+      console.log('[WARN] imageUrl muito longo, truncando...');
+      imageUrl = imageUrl.substring(0, 500);
+    }
+
     console.log('[DEBUG] Dados para criação:', dataToCreate);
 
     const message = await prisma.message.create({
