@@ -202,10 +202,11 @@ router.post('/:id/reply', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const messages = await prisma.message.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        replies: { orderBy: { createdAt: 'asc' } }
-      }
+      orderBy: { createdAt: 'desc' }
+      // Temporariamente removido include replies até migração ser aplicada
+      // include: {
+      //   replies: { orderBy: { createdAt: 'asc' } }
+      // }
     });
     res.json(messages);
   } catch (error) {
