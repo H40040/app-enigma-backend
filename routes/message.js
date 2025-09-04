@@ -241,11 +241,18 @@ router.get('/', async (req, res) => {
 // Marcar mensagem como lida
 router.put('/:id/read', async (req, res) => {
   const { id } = req.params;
+  console.log('[DEBUG] Marcar como lida - ID recebido:', id);
+  console.log('[DEBUG] Tipo do ID:', typeof id);
+  console.log('[DEBUG] Comprimento do ID:', id?.length);
+
   try {
     const message = await prisma.message.findUnique({ where: { id } });
     if (!message) {
+      console.log('[DEBUG] Mensagem não encontrada para ID:', id);
       return res.status(404).json({ error: 'Mensagem não encontrada.' });
     }
+
+    console.log('[DEBUG] Mensagem encontrada:', message.id);
 
     // Atualiza o status de leitura
     const updatedMessage = await prisma.message.update({
@@ -253,10 +260,18 @@ router.put('/:id/read', async (req, res) => {
       data: { isRead: true }
     });
 
+    console.log('[DEBUG] Mensagem marcada como lida com sucesso');
     res.json({ success: true, message: updatedMessage });
   } catch (error) {
     console.error('Erro ao marcar mensagem como lida:', error);
-    res.status(500).json({ error: 'Erro interno ao marcar mensagem como lida.' });
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    res.status(500).json({
+      error: 'Erro interno ao marcar mensagem como lida.',
+      details: error.message,
+      code: error.code
+    });
   }
 });
 
