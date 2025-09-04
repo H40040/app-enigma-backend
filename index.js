@@ -65,6 +65,7 @@ const corsOptions = {
     'https://app-enigma-frontend-gysrr1xya-h40040s-projects.vercel.app', 
     'https://app-enigma-frontend-kt0gd0i5h-h40040s-projects.vercel.app', 
     'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app',
+    'https://app-enigma-frontend-jzh0gb42e-h40040s-projects.vercel.app',
     'https://enigma-crush-backend-develop.up.railway.app',
     'http://192.168.1.91:3000', 
     'http://localhost:8080', 
