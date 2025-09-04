@@ -120,3 +120,50 @@ Se o problema persistir:
 - Frontend: `https://app-enigma-front-dev.vercel.app`
 - Backend: `https://enigma-crush-backend-develop.up.railway.app`
 - Health Check: `https://enigma-crush-backend-develop.up.railway.app/health`
+
+## 🧪 **MODO DE TESTE ATIVADO**
+
+### **Funcionalidades de Teste Disponíveis:**
+
+#### **1. ✅ Validação de Email**
+- **Código de Teste:** `123456`
+- **Como usar:**
+  1. Clique em "Enviar Código por Email"
+  2. Digite `123456` no campo de código
+  3. Clique em "Verificar"
+
+#### **2. ✅ Validação de WhatsApp/SMS**
+- **Código de Teste:** `123456`
+- **Como usar:**
+  1. Clique em "Enviar via WhatsApp" ou "Enviar via SMS"
+  2. Digite `123456` no campo de código
+  3. Clique em "Verificar"
+
+### **Como Desativar o Modo de Teste:**
+
+#### **Para Desenvolvimento:**
+```bash
+# No arquivo .env
+VITE_ENABLE_TEST_MODE=false
+```
+
+#### **Para Produção:**
+```bash
+# No arquivo .env.production
+VITE_ENABLE_TEST_MODE=false
+
+# OU no Vercel Dashboard:
+# Settings > Environment Variables
+# VITE_ENABLE_TEST_MODE=false
+```
+
+### **Indicadores do Modo de Teste:**
+- Toast mostra "(modo teste)" nas mensagens
+- Código de verificação é exibido nas notificações
+- Validação aceita apenas o código `123456`
+- Funciona tanto em desenvolvimento quanto produção
+
+### **Arquivos Modificados:**
+- `src/components/VerificationStep.tsx` - Lógica de validação
+- `.env` - Modo de teste ativado para desenvolvimento
+- `.env.production` - Modo de teste ativado para produção
