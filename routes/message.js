@@ -9,15 +9,15 @@ router.get('/:id/public', async (req, res) => {
   const { id } = req.params;
   try {
     const message = await prisma.message.findUnique({
-      where: { id },
-      include: {
-        replies: { // Assuming 'replies' is the relation field in Prisma schema
-          orderBy: {
-            createdAt: 'asc',
-          },
-        },
-        // We don't include sender's User object here for privacy on public view
-      },
+      where: { id }
+      // Temporariamente removido include replies até migração ser aplicada
+      // include: {
+      //   replies: {
+      //     orderBy: {
+      //       createdAt: 'asc',
+      //     },
+      //   },
+      // },
     });
 
     if (!message) {
@@ -31,8 +31,6 @@ router.get('/:id/public', async (req, res) => {
     });
 
     // Return the message (which now includes the updated view count implicitly if re-fetched,
-    // or client can assume view was incremented)
-    // For simplicity, we return the message fetched before view increment,
     // or we can re-fetch, but that's an extra DB call.
     // The client usually doesn't need the absolute latest view count immediately after viewing.
     res.json(message);
