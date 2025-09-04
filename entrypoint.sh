@@ -45,18 +45,8 @@ else
     fi
 fi
 
-# Executar script SQL adicional para sincronizar schema
-echo "🔧 Applying schema synchronization..."
-if [ -f "prisma/migrations/add_missing_columns.sql" ]; then
-    psql "$DATABASE_URL" -f prisma/migrations/add_missing_columns.sql
-    if [ $? -eq 0 ]; then
-        echo "✅ Schema synchronization completed"
-    else
-        echo "⚠️ Schema synchronization failed, but continuing..."
-    fi
-else
-    echo "⚠️ Schema sync file not found, skipping..."
-fi
+# Pular execução do script SQL adicional para evitar conflitos
+echo "⚠️ Skipping additional SQL script to avoid conflicts..."
 echo "🔍 Final migration status..."
 npx prisma migrate status
 echo "🚀 Starting server..."
