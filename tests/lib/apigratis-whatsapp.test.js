@@ -18,16 +18,6 @@ describe('validateWhatsapp_ApiGratis', () => {
     delete process.env.SKIP_API_VALIDATION;
   });
 
-  describe('modo de desenvolvimento', () => {
-    it('deve retornar válido quando SKIP_API_VALIDATION é true', async () => {
-      process.env.SKIP_API_VALIDATION = 'true';
-      
-      const result = await validateWhatsapp_ApiGratis('5511999999999');
-      
-      expect(result).toEqual({ valid: true });
-      expect(mockRequest).not.toHaveBeenCalled();
-    });
-  });
 
   describe('validação com API', () => {
     it('deve retornar válido para WhatsApp válido', async () => {

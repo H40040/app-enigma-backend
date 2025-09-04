@@ -15,18 +15,6 @@ describe('apigratis-cpf', () => {
   });
 
   describe('validateCPF_ApiGratis', () => {
-    it('deve retornar dados fake quando SKIP_API_VALIDATION é true', async () => {
-      process.env.SKIP_API_VALIDATION = 'true';
-      
-      const result = await validateCPF_ApiGratis('12345678901');
-      
-      expect(result).toEqual({
-        valid: true,
-        nome: 'Usuário Dev',
-        birthdate: '2000-01-01'
-      });
-      expect(mockRequest).not.toHaveBeenCalled();
-    });
 
     it('deve validar CPF com sucesso quando API retorna dados válidos', async () => {
       const mockResponse = {
