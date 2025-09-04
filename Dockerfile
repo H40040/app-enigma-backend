@@ -3,6 +3,9 @@
 
 FROM node:22.12.0
 
+# Instalar postgresql-client para psql
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
 # Diretório de trabalho
 WORKDIR /app
 
