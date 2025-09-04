@@ -107,7 +107,9 @@ router.post('/', async (req, res) => {
   try {
     // Log de criação de mensagem para auditoria
     console.log(`[AUDIT] Criação de mensagem: SenderID=${senderId}, IP=${req.ip}`);
-    console.log('[DEBUG] Dados para criação:', {
+
+    // Verificar tamanhos dos campos antes de criar
+    const dataToCreate = {
       senderId,
       recipientId: recipientId || null,
       recipientUsername: sanitizedUsername,
@@ -116,19 +118,20 @@ router.post('/', async (req, res) => {
       contactMethod,
       content: contentValidation.sanitized,
       imageUrl: imageUrl || null,
-    });
+    };
+
+    console.log('[DEBUG] Verificação de tamanhos:');
+    console.log('- recipientUsername:', sanitizedUsername?.length || 0, '/ 100');
+    console.log('- recipientEmail:', sanitizedEmail?.length || 0, '/ 255');
+    console.log('- recipientPhone:', sanitizedPhone?.length || 0, '/ 20');
+    console.log('- contactMethod:', contactMethod?.length || 0, '/ 50');
+    console.log('- content:', contentValidation.sanitized?.length || 0, '/ unlimited');
+    console.log('- imageUrl:', (imageUrl || '').length, '/ 500');
+
+    console.log('[DEBUG] Dados para criação:', dataToCreate);
 
     const message = await prisma.message.create({
-      data: {
-        senderId,
-        recipientId: recipientId || null,
-        recipientUsername: sanitizedUsername,
-        recipientEmail: sanitizedEmail,
-        recipientPhone: sanitizedPhone,
-        contactMethod,
-        content: contentValidation.sanitized,
-        imageUrl: imageUrl || null,
-      }
+      data: dataToCreate
     });
     console.log('[DEBUG] Mensagem criada com sucesso:', message.id);
     res.status(201).json(message);
@@ -139,8 +142,14 @@ router.post('/', async (req, res) => {
     console.error('Error name:', error.name);
     if (error.code) {
       console.error('Error code:', error.code);
+      console.error('Error meta:', error.meta);
     }
-    res.status(500).json({ error: 'Erro interno ao criar mensagem.', details: error.message });
+    res.status(500).json({
+      error: 'Erro interno ao criar mensagem.',
+      details: error.message,
+      code: error.code,
+      meta: error.meta
+    });
   }
 });
 
