@@ -67,11 +67,12 @@ const corsOptions = {
     'https://app-enigma-frontend-tif22ff8r-h40040s-projects.vercel.app',
     'https://app-enigma-frontend-jzh0gb42e-h40040s-projects.vercel.app',
     'https://enigma-crush-backend-develop.up.railway.app',
-    'http://192.168.1.91:3000', 
-    'http://localhost:8080', 
-    'http://127.0.0.1:8080', 
-    'http://localhost:8081', 
-    'http://127.0.0.1:8081'
+    'http://192.168.1.91:3000',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://127.0.0.1:8081',
+    process.env.FRONTEND_URL || 'https://app-enigma-frontend.vercel.app'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -185,13 +186,9 @@ app.post('/api/upload', authenticateToken, checkSessionActivity, trackUserActivi
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
     
-    // Gera a URL do arquivo usando o IP da máquina, nunca localhost
-    // Certifique-se de que SERVER_IP está definido corretamente no .env ou use o IP fixo da sua máquina na rede
-    const serverIp = process.env.SERVER_IP || req.hostname || req.connection.localAddress || '192.168.1.91';
-    const protocol = req.protocol;
-    // Força o IP correto se req.hostname for 'localhost'
-    const finalIp = (serverIp === 'localhost' || serverIp === '127.0.0.1') ? '192.168.1.91' : serverIp;
-    const fileUrl = `${protocol}://${finalIp}:4000/uploads/${req.file.filename}`;
+    // Gera a URL do arquivo usando a API_URL do ambiente de produção
+    const apiUrl = process.env.API_URL || 'https://enigma-crush-backend-develop.up.railway.app';
+    const fileUrl = `${apiUrl}/uploads/${req.file.filename}`;
       
     res.json({ url: fileUrl });
   } catch (error) {
