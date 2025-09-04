@@ -7,6 +7,13 @@ const router = express.Router();
 // Get a specific message publicly (e.g., for recipients)
 router.get('/:id/public', async (req, res) => {
   const { id } = req.params;
+  
+  const idValidation = InputValidator.validateUUID(id);
+  if (!idValidation.isValid) {
+    console.warn(`[WARN] Invalid message ID for public access: ${id} - ${idValidation.error}`);
+    return res.status(400).json({ error: idValidation.error });
+  }
+
   console.log('[DEBUG] Fetching public message:', id);
 
   try {
@@ -82,8 +89,19 @@ router.post('/', async (req, res) => {
   }
 
   // Validação do senderId
-  if (!senderId || typeof senderId !== 'string') {
-    return res.status(400).json({ error: 'ID do remetente é obrigatório' });
+  const senderIdValidation = InputValidator.validateUUID(senderId);
+  if (!senderIdValidation.isValid) {
+    console.warn(`[WARN] Invalid sender ID for message creation: ${senderId} - ${senderIdValidation.error}`);
+    return res.status(400).json({ error: `ID do remetente inválido: ${senderIdValidation.error}` });
+  }
+
+  // Validação do recipientId (se fornecido)
+  if (recipientId) {
+    const recipientIdValidation = InputValidator.validateUUID(recipientId);
+    if (!recipientIdValidation.isValid) {
+      console.warn(`[WARN] Invalid recipient ID for message creation: ${recipientId} - ${recipientIdValidation.error}`);
+      return res.status(400).json({ error: `ID do destinatário inválido: ${recipientIdValidation.error}` });
+    }
   }
 
   // Validação do método de contato
@@ -157,7 +175,7 @@ router.post('/', async (req, res) => {
       data: dataToCreate
     });
     console.log('[DEBUG] Mensagem criada com sucesso:', message.id);
-    res.status(201).json(message);
+    res.status(201).json({ message: 'Mensagem criada com sucesso!', messageId: message.id });
   } catch (error) {
     console.error('Erro ao criar mensagem:', error);
     console.error('Stack trace:', error.stack);
@@ -182,8 +200,10 @@ router.post('/:id/reply', async (req, res) => {
   const { content, fromRecipient } = req.body;
   
   // Validação do ID da mensagem
-  if (!id || typeof id !== 'string') {
-    return res.status(400).json({ error: 'ID da mensagem inválido' });
+  const idValidation = InputValidator.validateUUID(id);
+  if (!idValidation.isValid) {
+    console.warn(`[WARN] Invalid message ID for reply: ${id} - ${idValidation.error}`);
+    return res.status(400).json({ error: idValidation.error });
   }
 
   // Validação e sanitização do conteúdo da resposta
@@ -199,6 +219,7 @@ router.post('/:id/reply', async (req, res) => {
   try {
     // Verifica se a mensagem existe
     const message = await prisma.message.findUnique({ where: { id } });
+    console.log(`[DEBUG] Result of findUnique for message ${id}: ${JSON.stringify(message)}`);
     if (!message) {
       return res.status(404).json({ error: 'Mensagem não encontrada.' });
     }
@@ -221,16 +242,34 @@ router.post('/:id/reply', async (req, res) => {
   }
 });
 
-// Buscar todas as mensagens (para inbox/sent)
-router.get('/', async (req, res) => {
+// Buscar todas as mensagens (requer autenticação)
+router.get('/', authenticateToken, trackUserActivity, async (req, res) => {
+  const userId = req.user.id;
+  const { type, page = 1, pageSize = 10 } = req.query;
+
+  // Validação do userId (se for um UUID)
+  const userIdValidation = InputValidator.validateUUID(userId);
+  if (!userIdValidation.isValid) {
+    console.warn(`[WARN] Invalid user ID for fetching messages: ${userId} - ${userIdValidation.error}`);
+    return res.status(400).json({ error: userIdValidation.error });
+  }
   try {
     const messages = await prisma.message.findMany({
+      where: {
+        OR: [
+          { senderId: userId },
+          { recipientId: userId }
+        ],
+        ...(type === 'inbox' && { recipientId: userId }),
+        ...(type === 'sent' && { senderId: userId })
+      },
       orderBy: { createdAt: 'desc' }
       // Temporariamente removido include replies até migração ser aplicada
       // include: {
       //   replies: { orderBy: { createdAt: 'asc' } }
       // }
     });
+    console.log(`[DEBUG] Found ${messages.length} messages.`);
     res.json(messages);
   } catch (error) {
     console.error('Erro ao buscar mensagens:', error);
@@ -239,11 +278,18 @@ router.get('/', async (req, res) => {
 });
 
 // Marcar mensagem como lida
-router.put('/:id/read', async (req, res) => {
+router.put('/:id/read', authenticateToken, trackUserActivity, async (req, res) => {
   const { id } = req.params;
-  console.log('[DEBUG] Marcar como lida - ID recebido:', id);
-  console.log('[DEBUG] Tipo do ID:', typeof id);
-  console.log('[DEBUG] Comprimento do ID:', id?.length);
+  const userId = req.user.id;
+
+  const idValidation = InputValidator.validateUUID(id);
+  if (!idValidation.isValid) {
+    console.warn(`[WARN] Invalid message ID for mark as read: ${id} - ${idValidation.error}`);
+    return res.status(400).json({ error: idValidation.error });
+  }
+
+  console.log(`[DEBUG] Attempting to mark message ${id} as read by user ${userId}`);
+  console.log(`[DEBUG] Message ID: ${id}, User ID: ${userId}`);
 
   try {
     const message = await prisma.message.findUnique({ where: { id } });
@@ -275,9 +321,16 @@ router.put('/:id/read', async (req, res) => {
   }
 });
 
-// Deletar uma mensagem e suas replies
-router.delete('/:id', async (req, res) => {
+// Deletar mensagem (e suas respostas)
+router.delete('/:id', authenticateToken, trackUserActivity, async (req, res) => {
   const { id } = req.params;
+  const userId = req.user.id;
+
+  const idValidation = InputValidator.validateUUID(id);
+  if (!idValidation.isValid) {
+    console.warn(`[WARN] Invalid message ID for deletion: ${id} - ${idValidation.error}`);
+    return res.status(400).json({ error: idValidation.error });
+  }
   try {
     // Deleta replies associadas primeiro
     await prisma.reply.deleteMany({ where: { messageId: id } });

@@ -58,14 +58,16 @@ const trackUserActivity = async (req, res, next) => {
   if (req.user && req.user.id) {
     try {
       // Validar ID do usuário
-      const userId = parseInt(req.user.id);
-      if (isNaN(userId) || userId <= 0) {
-        console.log(`[AUDIT] ID de usuário inválido no token: ${req.user.id}`);
+      const userIdValidation = InputValidator.validateUUID(req.user.id);
+      if (!userIdValidation.isValid) {
+        console.log(`[AUDIT] ID de usuário inválido no token: ${req.user.id} - ${userIdValidation.error}`);
         return res.status(401).json({ error: 'Token inválido' });
       }
+      const userId = userIdValidation.sanitized;
 
       await prisma.user.update({
         where: { id: userId },
+
         data: { lastActivity: new Date() }
       });
       
