@@ -73,6 +73,8 @@ router.post('/', async (req, res) => {
     imageUrl
   } = req.body;
 
+  console.log('[DEBUG] Raw request body:', JSON.stringify(req.body, null, 2));
+
   // Validação e sanitização do conteúdo da mensagem
   const contentValidation = InputValidator.validateMessageContent(content);
   if (!contentValidation.isValid) {
