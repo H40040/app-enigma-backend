@@ -121,22 +121,28 @@ Se o problema persistir:
 - Backend: `https://enigma-crush-backend-develop.up.railway.app`
 - Health Check: `https://enigma-crush-backend-develop.up.railway.app/health`
 
-## ✅ **PROBLEMA RESOLVIDO - REGISTRO FUNCIONANDO!**
+## ✅ **PROBLEMA COMPLETAMENTE RESOLVIDO!**
 
 ### **🔧 Correções Aplicadas:**
 
-#### **1. ✅ Validação de Senha Corrigida**
+#### **1. ✅ Campo birthdate Corrigido**
+- **Problema:** Frontend enviava `birthDate`, backend esperava `birthdate`
+- **Arquivo:** `src/context/AppContext.tsx`
+- **Correção:** Campo `birthdate` enviado corretamente ao backend
+- **Resultado:** JSON parsing funcionando perfeitamente
+
+#### **2. ✅ Validação de Senha Corrigida**
 - **Arquivo:** `src/pages/Register.tsx`
 - **Correção:** Validação atualizada para requisitos do backend
 - **Requisitos:** 8+ caracteres, maiúscula, minúscula, número e especial
 - **Placeholder:** Atualizado para "Mínimo 8 caracteres (Aa1@)"
 
-#### **2. ✅ CORS Funcionando**
+#### **3. ✅ CORS Funcionando**
 - **Status:** ✅ Verificado e funcionando
 - **Origin:** `https://app-enigma-front-dev.vercel.app` autorizado
 - **Headers:** Todos os headers CORS presentes
 
-#### **3. ✅ Endpoint de Registro**
+#### **4. ✅ Endpoint de Registro**
 - **Status:** ✅ Funcionando perfeitamente
 - **Teste:** Registro criado com sucesso
 - **Resposta:** JWT token gerado corretamente
