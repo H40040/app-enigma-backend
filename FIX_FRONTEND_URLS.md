@@ -26,11 +26,17 @@ Origin: https://app-enigma-front-dev.vercel.app
 
 ### **1. CORS Atualizado (BACKEND)**
 - ✅ Adicionado `'https://app-enigma-front-dev.vercel.app'` à lista de origins permitidos
-- ✅ Commit realizado no backend
+- ✅ Commit realizado no backend: `1e61acc`
 
 ### **2. URLs Corretas Identificadas**
 - ✅ **Backend Railway:** `https://enigma-crush-backend-develop.up.railway.app`
 - ✅ **Frontend Vercel:** `https://app-enigma-front-dev.vercel.app`
+
+### **3. Frontend Corrigido**
+- ✅ **`.env.production`** - URLs atualizadas para Railway
+- ✅ **`src/config/production.ts`** - BASE_URL e CSP corrigidos
+- ✅ **`src/services/api.ts`** - URL de upload corrigida
+- ✅ **Commit realizado:** `6761b36`
 
 ## 🛠️ Correção Necessária no Frontend
 
