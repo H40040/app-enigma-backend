@@ -8,7 +8,7 @@ generator client {
 // Ou: npm run db:seed
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
