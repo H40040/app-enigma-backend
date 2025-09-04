@@ -7,6 +7,8 @@ const router = express.Router();
 // Get a specific message publicly (e.g., for recipients)
 router.get('/:id/public', async (req, res) => {
   const { id } = req.params;
+  console.log('[DEBUG] Fetching public message:', id);
+
   try {
     const message = await prisma.message.findUnique({
       where: { id }
@@ -20,15 +22,20 @@ router.get('/:id/public', async (req, res) => {
       // },
     });
 
+    console.log('[DEBUG] Message found:', !!message);
+
     if (!message) {
       return res.status(404).json({ error: 'Message not found' });
     }
 
     // Increment view count
+    console.log('[DEBUG] Incrementing view count for message:', id);
     await prisma.message.update({
       where: { id },
       data: { views: { increment: 1 } },
     });
+
+    console.log('[DEBUG] View count incremented successfully');
 
     // Return the message (which now includes the updated view count implicitly if re-fetched,
     // or we can re-fetch, but that's an extra DB call.
@@ -36,10 +43,20 @@ router.get('/:id/public', async (req, res) => {
     res.json(message);
   } catch (error) {
     console.error('Error fetching public message:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
+    if (error.code) {
+      console.error('Error code:', error.code);
+      console.error('Error meta:', error.meta);
+    }
     if (error.code === 'P2025') { // Prisma error code for record not found during update (if message was deleted between find and update)
         return res.status(404).json({ error: 'Message not found or could not be updated.' });
     }
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({
+      error: 'Internal server error',
+      details: error.message,
+      code: error.code
+    });
   }
 });
 
