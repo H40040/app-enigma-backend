@@ -48,4 +48,70 @@ router.get('/search', async (req, res) => {
   }
 });
 
+// Check user by contact (email or whatsapp)
+router.get('/check-contact', async (req, res) => {
+  const { email, whatsapp } = req.query;
+
+  // Validar que pelo menos um campo foi fornecido
+  if (!email && !whatsapp) {
+    return res.status(400).json({ error: 'Email ou WhatsApp deve ser fornecido' });
+  }
+
+  try {
+    let user = null;
+
+    // Buscar por email se fornecido
+    if (email) {
+      const emailValidation = InputValidator.validateEmail(email);
+      if (!emailValidation.isValid) {
+        return res.status(400).json({ error: `Email: ${emailValidation.error}` });
+      }
+
+      user = await prisma.user.findUnique({
+        where: { email: emailValidation.sanitized },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          whatsapp: true
+        }
+      });
+    }
+
+    // Buscar por WhatsApp se fornecido e não encontrou por email
+    if (!user && whatsapp) {
+      const phoneValidation = InputValidator.validatePhone(whatsapp);
+      if (!phoneValidation.isValid) {
+        return res.status(400).json({ error: `WhatsApp: ${phoneValidation.error}` });
+      }
+
+      user = await prisma.user.findFirst({
+        where: { whatsapp: phoneValidation.sanitized },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          whatsapp: true
+        }
+      });
+    }
+
+    if (user) {
+      res.json({
+        exists: true,
+        user: user
+      });
+    } else {
+      res.json({
+        exists: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+  } catch (error) {
+    console.error('[USER CHECK] Error checking user by contact:', error);
+    res.status(500).json({ error: 'Erro interno ao verificar usuário' });
+  }
+});
+
 module.exports = router;
