@@ -128,9 +128,6 @@ router.post('/', async (req, res) => {
         contactMethod,
         content: contentValidation.sanitized,
         imageUrl: imageUrl || null,
-      },
-      include: {
-        replies: true
       }
     });
     console.log('[DEBUG] Mensagem criada com sucesso:', message.id);
