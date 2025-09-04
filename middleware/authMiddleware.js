@@ -1,16 +1,18 @@
+// ... existing code ...
+
 const jwt = require('jsonwebtoken');
-const InputValidator = require('../lib/validation');
 const prisma = require('../lib/prisma');
+const InputValidator = require('../lib/validation');
 
 const authenticateToken = (req, res, next) => {
+    let token = req.cookies?.accessToken;
+  console.log(`[DEBUG] authenticateToken: Token received: ${token ? 'Yes' : 'No'}`);
+
   // Verificar se JWT_SECRET está configurado
   if (!process.env.JWT_SECRET) {
     console.error('[SECURITY] JWT_SECRET não configurado!');
     return res.status(500).json({ error: 'Erro de configuração do servidor' });
   }
-
-  // Primeiro, tenta pegar o token do cookie
-  let token = req.cookies?.accessToken;
   
   // Se não encontrar no cookie, tenta no header Authorization
   if (!token) {
@@ -77,7 +79,7 @@ const trackUserActivity = async (req, res, next) => {
       console.error('Erro ao atualizar atividade do usuário:', error);
       // Se o usuário não existe, token pode estar comprometido
       if (error.code === 'P2025') {
-        return res.status(401).json({ error: 'Usuário não encontrado' });
+        return res.status(404).json({ error: 'Usuário não encontrado' });
       }
     }
   }

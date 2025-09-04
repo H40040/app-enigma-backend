@@ -1,12 +1,28 @@
 // tests/routes/message.test.js
 const request = require('supertest');
 const app = require('../../index');
+const { v4: uuidv4 } = require('uuid');
+const InputValidator = require('../../lib/validation');
 
 // Mock do Prisma
 const mockPrisma = global.mockPrisma;
 
 // Mock do módulo prisma
 jest.mock('../../lib/prisma', () => global.mockPrisma);
+
+// Mock dos middlewares de autenticação
+jest.mock('../../middleware/authMiddleware', () => ({
+  authenticateToken: jest.fn((req, res, next) => {
+    req.user = { id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' }; // UUID válido para o usuário mock
+    next();
+  }),
+  trackUserActivity: jest.fn((req, res, next) => {
+    next();
+  }),
+  checkSessionActivity: jest.fn((req, res, next) => {
+    next();
+  }),
+}));
 
 describe('Message Routes', () => {
   beforeEach(() => {
@@ -259,6 +275,70 @@ describe('Message Routes', () => {
 
       expect(response.status).toBe(500);
       expect(response.body.error).toBe('Erro interno ao criar mensagem.');
+    });
+  });
+
+  describe('PUT /:id/read', () => {
+    it('deve marcar mensagem como lida com sucesso', async () => {
+      const messageId = uuidv4();
+      const userId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+
+      mockPrisma.message.findUnique.mockResolvedValue({
+        id: messageId,
+        readBy: [],
+      });
+      mockPrisma.message.update.mockResolvedValue({
+        id: messageId,
+        readBy: [userId],
+      });
+
+      const response = await request(app)
+        .put(`/api/messages/${messageId}/read`)
+        .set('Authorization', `Bearer some_token`); // Token é mockado pelo middleware
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Message marked as read');
+      expect(mockPrisma.message.update).toHaveBeenCalledWith({
+        where: { id: messageId },
+        data: {
+          readBy: { push: userId },
+        },
+      });
+    });
+
+    it('deve retornar 404 se a mensagem não for encontrada', async () => {
+      const messageId = uuidv4();
+      mockPrisma.message.findUnique.mockResolvedValue(null);
+
+      const response = await request(app)
+        .put(`/api/messages/${messageId}/read`)
+        .set('Authorization', `Bearer some_token`);
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe('Message not found');
+    });
+
+    it('deve retornar 500 em caso de erro interno do servidor', async () => {
+      const messageId = uuidv4();
+      mockPrisma.message.findUnique.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app)
+        .put(`/api/messages/${messageId}/read`)
+        .set('Authorization', `Bearer some_token`);
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Internal server error');
+    });
+
+    it('deve retornar 400 para ID de mensagem inválido', async () => {
+      const invalidMessageId = 'invalid-uuid';
+
+      const response = await request(app)
+        .put(`/api/messages/${invalidMessageId}/read`)
+        .set('Authorization', `Bearer some_token`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('ID da mensagem inválido');
     });
   });
 

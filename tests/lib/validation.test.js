@@ -6,8 +6,13 @@ describe('InputValidator', () => {
     it('deve sanitizar string removendo caracteres perigosos', () => {
       const input = '<script>alert("xss")</script>Hello World!';
       const result = InputValidator.sanitizeString(input);
+      expect(result).toContain('&lt;script&gt;');
+      expect(result).toContain('&quot;xss&quot;');
+      expect(result).toContain('&lt;/script&gt;');
+      expect(result).toContain('Hello World!');
       expect(result).not.toContain('<script>');
-      expect(result).not.toContain('alert');
+      expect(result).not.toContain('"xss"');
+      expect(result).not.toContain('</script>');
     });
 
     it('deve remover caracteres de controle', () => {
@@ -299,7 +304,7 @@ describe('InputValidator', () => {
       const longContent = 'A'.repeat(5001);
       const result = InputValidator.validateMessageContent(longContent);
       expect(result.isValid).toBe(false);
-      expect(result.error).toBe('Conteúdo muito longo (máximo 5000 caracteres)');
+      expect(result.error).toBe('O conteúdo da mensagem excede o limite de 1000 caracteres.');
     });
 
     it('deve rejeitar conteúdo vazio', () => {

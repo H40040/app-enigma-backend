@@ -289,7 +289,10 @@ router.put('/:id/read', authenticateToken, trackUserActivity, async (req, res) =
   }
 
   console.log(`[DEBUG] Attempting to mark message ${id} as read by user ${userId}`);
-  console.log(`[DEBUG] Message ID: ${id}, User ID: ${userId}`);
+  console.log(`[DEBUG] Message ID: ${id}, User ID: ${userId}, req.user: ${!!req.user}`);
+  if (req.user) {
+    console.log(`[DEBUG] req.user.id: ${req.user.id}`);
+  }
 
   try {
     const message = await prisma.message.findUnique({ where: { id } });

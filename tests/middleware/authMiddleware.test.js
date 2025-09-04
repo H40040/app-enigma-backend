@@ -3,6 +3,10 @@ const jwt = require('jsonwebtoken');
 const { authenticateToken, trackUserActivity, checkSessionActivity } = require('../../middleware/authMiddleware');
 const prisma = require('../../lib/prisma');
 
+jest.mock('../../lib/validation', () => ({
+  validateId: jest.fn((id) => id),
+}));
+
 jest.mock('jsonwebtoken');
 jest.mock('../../lib/prisma', () => ({
   user: {
@@ -15,6 +19,10 @@ describe('AuthMiddleware', () => {
   let req, res, next;
 
   beforeEach(() => {
+    // Mock console.log e console.error para evitar poluir a saída do teste
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
     // Configurar JWT_SECRET para os testes
     process.env.JWT_SECRET = 'test-jwt-secret-key-for-testing-only';
     
@@ -32,6 +40,8 @@ describe('AuthMiddleware', () => {
   });
 
   afterEach(() => {
+    // Restaurar console.log e console.error
+    jest.restoreAllMocks();
     // Limpar mocks
     jest.clearAllMocks();
   });
@@ -89,7 +99,7 @@ describe('AuthMiddleware', () => {
     authenticateToken(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-     expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Token inválido' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -140,10 +150,12 @@ describe('trackUserActivity', () => {
   it('deve atualizar atividade do usuário com sucesso', async () => {
     prisma.user.update.mockResolvedValue({});
 
+    const userId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+    req.user.id = userId;
     await trackUserActivity(req, res, next);
 
     expect(prisma.user.update).toHaveBeenCalledWith({
-      where: { id: 1 },
+      where: { id: userId },
       data: { lastActivity: expect.any(Date) }
     });
     expect(next).toHaveBeenCalled();
@@ -167,7 +179,7 @@ describe('trackUserActivity', () => {
 
     await trackUserActivity(req, res, next);
 
-    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: 'Usuário não encontrado' });
     expect(next).not.toHaveBeenCalled();
   });
