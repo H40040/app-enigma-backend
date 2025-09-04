@@ -4,7 +4,7 @@
     "description": "Backend para o Enigma Crush",
     "main": "index.js",
     "scripts": {
-        "start": "node index.js",
+        "start": "./entrypoint.sh",
         "start:prod": "cross-env NODE_ENV=production node index.js",
         "dev": "nodemon index.js",
         "build": "npm run test && npm run db:migrate && echo 'Build completed'",
