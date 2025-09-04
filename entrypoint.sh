@@ -30,8 +30,8 @@ npx prisma migrate status
 echo "🗂️ Available migration files:"
 ls -la prisma/migrations/
 
-echo "🔄 Forcing migration deployment..."
-if npx prisma migrate deploy --force; then
+echo "🔄 Deploying migrations..."
+if npx prisma migrate deploy; then
     echo "✅ Migrations applied successfully"
 else
     echo "❌ Migration failed. Trying to reset and apply..."
