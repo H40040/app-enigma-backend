@@ -191,6 +191,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Marcar mensagem como lida
+router.put('/:id/read', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const message = await prisma.message.findUnique({ where: { id } });
+    if (!message) {
+      return res.status(404).json({ error: 'Mensagem não encontrada.' });
+    }
+
+    // Atualiza o status de leitura
+    const updatedMessage = await prisma.message.update({
+      where: { id },
+      data: { isRead: true }
+    });
+
+    res.json({ success: true, message: updatedMessage });
+  } catch (error) {
+    console.error('Erro ao marcar mensagem como lida:', error);
+    res.status(500).json({ error: 'Erro interno ao marcar mensagem como lida.' });
+  }
+});
+
 // Deletar uma mensagem e suas replies
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
