@@ -4,7 +4,14 @@ const { authenticateToken, trackUserActivity, checkSessionActivity } = require('
 const prisma = require('../../lib/prisma');
 
 jest.mock('../../lib/validation', () => ({
-  validateId: jest.fn((id) => id),
+  validateUUID: jest.fn((id) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (uuidRegex.test(id)) {
+      return { isValid: true, sanitized: id };
+    } else {
+      return { isValid: false, error: 'Invalid UUID' };
+    }
+  }),
 }));
 
 jest.mock('jsonwebtoken');
@@ -145,13 +152,14 @@ describe('trackUserActivity', () => {
     };
     next = jest.fn();
     jest.clearAllMocks();
+    prisma.user.update.mockClear(); // Limpar mock do prisma.user.update
   });
 
   it('deve atualizar atividade do usuário com sucesso', async () => {
-    prisma.user.update.mockResolvedValue({});
-
     const userId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
     req.user.id = userId;
+    prisma.user.update.mockResolvedValue({});
+
     await trackUserActivity(req, res, next);
 
     expect(prisma.user.update).toHaveBeenCalledWith({
@@ -173,9 +181,12 @@ describe('trackUserActivity', () => {
   });
 
   it('deve lidar com usuário não encontrado', async () => {
-    const error = new Error('User not found');
-    error.code = 'P2025';
-    prisma.user.update.mockRejectedValue(error);
+    const prismaError = new Error('An operation failed because it depends on one or more records that were required but not found. Record to update not found.');
+    prismaError.code = 'P2025';
+    prisma.user.update.mockRejectedValue(prismaError);
+
+    const userId = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+    req.user.id = userId;
 
     await trackUserActivity(req, res, next);
 

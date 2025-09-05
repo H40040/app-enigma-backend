@@ -66,7 +66,8 @@ const mockPrisma = {
     deleteMany: jest.fn(),
     count: jest.fn()
   },
-  $disconnect: jest.fn()
+  $disconnect: jest.fn(),
+  $queryRaw: jest.fn() // Adicionado mock para $queryRaw
 };
 
 // Mock global do Prisma

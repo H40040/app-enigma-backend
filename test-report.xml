@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\lib\cpf.test.js">
+    <testCase name="cpf isValidCPF deve validar CPF válido sem formatação" duration="17"/>
+    <testCase name="cpf isValidCPF deve validar CPF válido com formatação" duration="3"/>
+    <testCase name="cpf isValidCPF deve rejeitar CPF com menos de 11 dígitos" duration="2"/>
+    <testCase name="cpf isValidCPF deve rejeitar CPF com mais de 11 dígitos" duration="1"/>
+    <testCase name="cpf isValidCPF deve rejeitar CPF com todos os dígitos iguais" duration="2"/>
+    <testCase name="cpf isValidCPF deve rejeitar CPF com dígitos verificadores incorretos" duration="1"/>
+    <testCase name="cpf isValidCPF deve lidar com CPF contendo caracteres não numéricos" duration="1"/>
+    <testCase name="cpf isValidCPF deve rejeitar entrada null ou undefined" duration="22"/>
+    <testCase name="cpf isValidCPF deve validar CPFs conhecidos válidos" duration="2"/>
+    <testCase name="cpf isValidCPF deve rejeitar CPFs conhecidos inválidos" duration="1"/>
+    <testCase name="cpf isValidCPF deve lidar com strings vazias e espaços" duration="1"/>
+    <testCase name="cpf isValidCPF deve validar CPF com zeros à esquerda" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\lib\apigratis-cpf.test.js">
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve validar CPF com sucesso quando API retorna dados válidos" duration="19"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve rejeitar CPF quando pessoa tem menos de 16 anos" duration="2"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve aceitar CPF quando pessoa tem exatamente 16 anos" duration="1"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve retornar inválido quando API retorna status false" duration="0"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve retornar inválido quando API não retorna resultado" duration="1"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve tratar erro da API corretamente" duration="1"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve tratar data de nascimento sem dados" duration="1"/>
+    <testCase name="apigratis-cpf validateCPF_ApiGratis deve formatar data corretamente com zeros à esquerda" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\middleware\errorHandler.test.js">
+    <testCase name="Error Handler Middleware Error handling deve tratar erro com statusCode e message customizados" duration="19"/>
+    <testCase name="Error Handler Middleware Error handling deve usar status 500 e mensagem padrão quando não fornecidos" duration="2"/>
+    <testCase name="Error Handler Middleware Error handling deve incluir stack trace em ambiente de desenvolvimento" duration="1"/>
+    <testCase name="Error Handler Middleware Error handling deve ocultar stack trace em ambiente de produção" duration="1"/>
+    <testCase name="Error Handler Middleware Error handling deve tratar erro sem stack trace" duration="2"/>
+    <testCase name="Error Handler Middleware Error handling deve tratar objeto Error nativo do JavaScript" duration="19"/>
+    <testCase name="Error Handler Middleware Environment handling deve funcionar quando NODE_ENV não está definido" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\lib\apigratis-whatsapp.test.js">
+    <testCase name="validateWhatsapp_ApiGratis validação com API deve retornar válido para WhatsApp válido" duration="18"/>
+    <testCase name="validateWhatsapp_ApiGratis validação com API deve retornar inválido quando is_whatsapp é false" duration="2"/>
+    <testCase name="validateWhatsapp_ApiGratis validação com API deve retornar inválido quando status é false" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis validação com API deve retornar inválido quando resultado está ausente" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis validação com API deve retornar inválido quando resposta é null" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis validação com API deve retornar inválido quando resposta é undefined" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis tratamento de erros deve tratar erro da API corretamente" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis tratamento de erros deve tratar erro sem mensagem" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis tratamento de erros deve tratar rejeição com string" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis diferentes formatos de número deve validar número com formatação" duration="1"/>
+    <testCase name="validateWhatsapp_ApiGratis diferentes formatos de número deve validar número sem código do país" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\validation.test.js">
+    <testCase name="Validation Utilities isValidEmail should return true for a valid email" duration="14"/>
+    <testCase name="Validation Utilities isValidEmail should return false for an invalid email" duration="2"/>
+    <testCase name="Validation Utilities isValidPassword should return true for a valid password" duration="1"/>
+    <testCase name="Validation Utilities isValidPassword should return false for an invalid password" duration="2"/>
+    <testCase name="Validation Utilities isRequired should return true for a non-empty value" duration="2"/>
+    <testCase name="Validation Utilities isRequired should return false for null, undefined, empty string, or empty array" duration="1"/>
+    <testCase name="Validation Utilities isWithinRange should return true if number is within range" duration="1"/>
+    <testCase name="Validation Utilities isWithinRange should return false if number is outside range" duration="0"/>
+    <testCase name="Validation Utilities isLength should return true if string matches length" duration="0"/>
+    <testCase name="Validation Utilities isLength should return false if string does not match length" duration="0"/>
+    <testCase name="Validation Utilities isMinLength should return true if string meets minimum length" duration="1"/>
+    <testCase name="Validation Utilities isMinLength should return false if string is shorter than minimum length" duration="1"/>
+    <testCase name="Validation Utilities isMaxLength should return true if string meets maximum length" duration="1"/>
+    <testCase name="Validation Utilities isMaxLength should return false if string is longer than maximum length" duration="0"/>
+    <testCase name="Validation Utilities isUnique should return true if array has unique elements" duration="1"/>
+    <testCase name="Validation Utilities isUnique should return false if array has duplicate elements" duration="1"/>
+    <testCase name="Validation Utilities isType should return true if value is of the expected type" duration="0"/>
+    <testCase name="Validation Utilities isType should return false if value is not of the expected type" duration="1"/>
+    <testCase name="Validation Utilities isIncluded should return true if value is in allowed values" duration="0"/>
+    <testCase name="Validation Utilities isIncluded should return false if value is not in allowed values" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\middleware\rateLimit.test.js">
+    <testCase name="Rate Limiters apiLimiter deve ter as configurações corretas para API geral" duration="16"/>
+    <testCase name="Rate Limiters apiLimiter deve ser uma função middleware válida" duration="1"/>
+    <testCase name="Rate Limiters apiLimiter deve processar requisição sem erro quando NODE_ENV é test" duration="2"/>
+    <testCase name="Rate Limiters authLimiter deve ter as configurações corretas para login" duration="1"/>
+    <testCase name="Rate Limiters authLimiter deve ser uma função middleware válida" duration="0"/>
+    <testCase name="Rate Limiters authLimiter deve processar requisição sem erro quando NODE_ENV é test" duration="1"/>
+    <testCase name="Rate Limiters passwordChangeLimiter deve ter as configurações corretas para mudança de senha" duration="1"/>
+    <testCase name="Rate Limiters passwordChangeLimiter deve ser uma função middleware válida" duration="1"/>
+    <testCase name="Rate Limiters passwordChangeLimiter deve processar requisição sem erro quando NODE_ENV é test" duration="1"/>
+    <testCase name="Rate Limiters validationLimiter deve ter as configurações corretas para validações de CPF/WhatsApp" duration="1"/>
+    <testCase name="Rate Limiters validationLimiter deve ser uma função middleware válida" duration="1"/>
+    <testCase name="Rate Limiters validationLimiter deve processar requisição sem erro quando NODE_ENV é test" duration="1"/>
+    <testCase name="Rate Limiters messageLimiter deve ter as configurações corretas para envio de mensagens" duration="0"/>
+    <testCase name="Rate Limiters messageLimiter deve ser uma função middleware válida" duration="1"/>
+    <testCase name="Rate Limiters messageLimiter deve processar requisição sem erro quando NODE_ENV é test" duration="0"/>
+    <testCase name="Rate Limiters Exportações deve exportar todos os limiters" duration="0"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\middleware\authMiddleware.test.js">
+    <testCase name="AuthMiddleware authenticateToken deve retornar 401 se não houver token" duration="17"/>
+    <testCase name="AuthMiddleware authenticateToken deve retornar 401 se o token for inválido" duration="3"/>
+    <testCase name="AuthMiddleware authenticateToken deve retornar 401 se o token estiver expirado" duration="2"/>
+    <testCase name="AuthMiddleware authenticateToken deve rejeitar token com payload inválido" duration="2"/>
+    <testCase name="AuthMiddleware authenticateToken deve rejeitar token muito longo" duration="2"/>
+    <testCase name="AuthMiddleware authenticateToken deve lidar com erro de autenticação genérico" duration="2"/>
+    <testCase name="AuthMiddleware trackUserActivity deve atualizar atividade do usuário com sucesso" duration="3"/>
+    <testCase name="AuthMiddleware trackUserActivity deve rejeitar ID de usuário inválido" duration="2"/>
+    <testCase name="AuthMiddleware trackUserActivity deve lidar com usuário não encontrado" duration="2"/>
+    <testCase name="AuthMiddleware trackUserActivity deve continuar sem usuário na requisição" duration="2"/>
+    <testCase name="AuthMiddleware checkSessionActivity deve permitir sessão ativa" duration="2"/>
+    <testCase name="AuthMiddleware checkSessionActivity deve rejeitar sessão expirada" duration="2"/>
+    <testCase name="AuthMiddleware checkSessionActivity deve rejeitar usuário não encontrado" duration="2"/>
+    <testCase name="AuthMiddleware checkSessionActivity deve lidar com erro de banco de dados" duration="1"/>
+    <testCase name="AuthMiddleware checkSessionActivity deve continuar sem usuário na requisição" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\lib\validation.test.js">
+    <testCase name="InputValidator sanitizeString deve sanitizar string removendo caracteres perigosos" duration="16"/>
+    <testCase name="InputValidator sanitizeString deve remover caracteres de controle" duration="1"/>
+    <testCase name="InputValidator sanitizeString deve escapar caracteres HTML" duration="2"/>
+    <testCase name="InputValidator sanitizeString deve retornar string vazia para input não-string" duration="1"/>
+    <testCase name="InputValidator sanitizeString deve fazer trim da string" duration="1"/>
+    <testCase name="InputValidator validateEmail deve validar email válido" duration="3"/>
+    <testCase name="InputValidator validateEmail deve normalizar email" duration="2"/>
+    <testCase name="InputValidator validateEmail deve rejeitar email inválido" duration="0"/>
+    <testCase name="InputValidator validateEmail deve rejeitar email muito longo" duration="0"/>
+    <testCase name="InputValidator validateEmail deve rejeitar email vazio" duration="0"/>
+    <testCase name="InputValidator validatePassword deve validar senha forte" duration="0"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha muito curta" duration="1"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha muito longa" duration="1"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha sem letra minúscula" duration="1"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha sem letra maiúscula" duration="1"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha sem número" duration="0"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha sem caractere especial" duration="1"/>
+    <testCase name="InputValidator validatePassword deve rejeitar senha vazia ou nula" duration="0"/>
+    <testCase name="InputValidator validateName deve validar nome válido" duration="1"/>
+    <testCase name="InputValidator validateName deve aceitar nomes com acentos e hífens" duration="1"/>
+    <testCase name="InputValidator validateName deve rejeitar nomes com apostrofe após sanitização" duration="0"/>
+    <testCase name="InputValidator validateName deve rejeitar nome muito curto" duration="1"/>
+    <testCase name="InputValidator validateName deve rejeitar nome muito longo" duration="1"/>
+    <testCase name="InputValidator validateName deve rejeitar nome com caracteres inválidos" duration="0"/>
+    <testCase name="InputValidator validateName deve rejeitar nome vazio" duration="0"/>
+    <testCase name="InputValidator validateCPF deve validar CPF válido" duration="1"/>
+    <testCase name="InputValidator validateCPF deve validar CPF com formatação" duration="1"/>
+    <testCase name="InputValidator validateCPF deve rejeitar CPF com todos os dígitos iguais" duration="1"/>
+    <testCase name="InputValidator validateCPF deve rejeitar CPF com número incorreto de dígitos" duration="0"/>
+    <testCase name="InputValidator validateCPF deve rejeitar CPF com dígitos verificadores inválidos" duration="0"/>
+    <testCase name="InputValidator validateCPF deve rejeitar CPF vazio" duration="5"/>
+    <testCase name="InputValidator validatePhone deve validar telefone válido" duration="0"/>
+    <testCase name="InputValidator validatePhone deve validar telefone com formatação" duration="1"/>
+    <testCase name="InputValidator validatePhone deve validar telefone internacional" duration="0"/>
+    <testCase name="InputValidator validatePhone deve rejeitar telefone muito curto" duration="1"/>
+    <testCase name="InputValidator validatePhone deve rejeitar telefone muito longo" duration="0"/>
+    <testCase name="InputValidator validatePhone deve rejeitar telefone vazio" duration="0"/>
+    <testCase name="InputValidator validateBirthdate deve validar data de nascimento válida" duration="3"/>
+    <testCase name="InputValidator validateBirthdate deve rejeitar menor de 18 anos" duration="1"/>
+    <testCase name="InputValidator validateBirthdate deve rejeitar data muito antiga" duration="0"/>
+    <testCase name="InputValidator validateBirthdate deve rejeitar data inválida" duration="1"/>
+    <testCase name="InputValidator validateBirthdate deve rejeitar data vazia" duration="1"/>
+    <testCase name="InputValidator validateMessageContent deve validar conteúdo de mensagem válido" duration="0"/>
+    <testCase name="InputValidator validateMessageContent deve sanitizar conteúdo perigoso" duration="0"/>
+    <testCase name="InputValidator validateMessageContent deve rejeitar conteúdo muito longo" duration="1"/>
+    <testCase name="InputValidator validateMessageContent deve rejeitar conteúdo vazio" duration="1"/>
+    <testCase name="InputValidator validateId deve validar UUID válido" duration="1"/>
+    <testCase name="InputValidator validateId deve fazer trim do ID" duration="1"/>
+    <testCase name="InputValidator validateId deve rejeitar ID inválido" duration="0"/>
+    <testCase name="InputValidator validateId deve rejeitar ID vazio" duration="1"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\dashboard.test.js">
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\health.test.js">
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\middleware\rateLimit.enhanced.test.js">
+    <testCase name="Rate Limiters - Enhanced Coverage authLimiter deve permitir requisições dentro do limite em produção" duration="97"/>
+    <testCase name="Rate Limiters - Enhanced Coverage authLimiter deve bloquear requisições acima do limite em produção" duration="116"/>
+    <testCase name="Rate Limiters - Enhanced Coverage authLimiter deve permitir todas as requisições em ambiente de teste" duration="54"/>
+    <testCase name="Rate Limiters - Enhanced Coverage passwordChangeLimiter deve permitir requisições dentro do limite em produção" duration="17"/>
+    <testCase name="Rate Limiters - Enhanced Coverage passwordChangeLimiter deve bloquear requisições acima do limite em produção" duration="27"/>
+    <testCase name="Rate Limiters - Enhanced Coverage validationLimiter deve permitir requisições dentro do limite em produção" duration="65"/>
+    <testCase name="Rate Limiters - Enhanced Coverage validationLimiter deve bloquear requisições acima do limite em produção" duration="59"/>
+    <testCase name="Rate Limiters - Enhanced Coverage apiLimiter deve permitir requisições dentro do limite em produção" duration="310"/>
+    <testCase name="Rate Limiters - Enhanced Coverage apiLimiter deve incluir headers de rate limit" duration="7"/>
+    <testCase name="Rate Limiters - Enhanced Coverage messageLimiter deve permitir requisições dentro do limite em produção" duration="61"/>
+    <testCase name="Rate Limiters - Enhanced Coverage messageLimiter deve bloquear requisições acima do limite em produção" duration="70"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Rate Limiter Configuration deve ter configurações corretas para authLimiter" duration="0"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Rate Limiter Configuration deve ter configurações corretas para passwordChangeLimiter" duration="1"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Rate Limiter Configuration deve ter configurações corretas para validationLimiter" duration="0"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Rate Limiter Configuration deve ter configurações corretas para apiLimiter" duration="1"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Rate Limiter Configuration deve ter configurações corretas para messageLimiter" duration="0"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Environment-specific behavior deve pular rate limiting em ambiente de desenvolvimento" duration="50"/>
+    <testCase name="Rate Limiters - Enhanced Coverage Environment-specific behavior deve pular rate limiting quando NODE_ENV não está definido" duration="51"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\auth.simple.test.js">
+    <testCase name="Auth Routes - Simple Test deve carregar o aplicativo sem erros" duration="11"/>
+    <testCase name="Auth Routes - Simple Test deve fazer login com credenciais válidas" duration="157"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\user.test.js">
+    <testCase name="User Routes GET /search deve buscar usuários por nome" duration="127"/>
+    <testCase name="User Routes GET /search deve retornar array vazio quando não encontrar usuários" duration="18"/>
+    <testCase name="User Routes GET /search deve sanitizar o parâmetro de busca" duration="20"/>
+    <testCase name="User Routes GET /search deve retornar 400 para nome inválido" duration="13"/>
+    <testCase name="User Routes GET /search deve retornar 400 para nome muito curto" duration="9"/>
+    <testCase name="User Routes GET /search deve retornar 400 para nome muito longo" duration="13"/>
+    <testCase name="User Routes GET /search deve aceitar nome com exatamente 2 caracteres" duration="13"/>
+    <testCase name="User Routes GET /search deve aceitar nome com exatamente 50 caracteres" duration="15"/>
+    <testCase name="User Routes GET /search deve limitar resultados a 20 usuários" duration="26"/>
+    <testCase name="User Routes GET /search deve fazer busca case-insensitive" duration="19"/>
+    <testCase name="User Routes GET /search deve retornar apenas campos específicos do usuário" duration="14"/>
+    <testCase name="User Routes GET /search deve lidar com erro interno do servidor" duration="22"/>
+    <testCase name="User Routes GET /search deve fazer log de auditoria da busca" duration="7"/>
+    <testCase name="User Routes GET /search deve fazer log dos resultados encontrados" duration="6"/>
+    <testCase name="User Routes GET /search deve fazer log de erro em caso de falha" duration="12"/>
+    <testCase name="User Routes GET /search deve lidar com parâmetro name ausente" duration="7"/>
+    <testCase name="User Routes GET /search deve lidar com caracteres especiais no nome" duration="11"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\register.test.js">
+    <testCase name="Register Routes POST /register deve registrar usuário com dados válidos" duration="124"/>
+    <testCase name="Register Routes POST /register deve registrar usuário sem WhatsApp (campo opcional)" duration="17"/>
+    <testCase name="Register Routes POST /register deve retornar 400 para email inválido" duration="11"/>
+    <testCase name="Register Routes POST /register deve retornar 400 para senha inválida" duration="12"/>
+    <testCase name="Register Routes POST /register deve retornar 400 para nome inválido" duration="15"/>
+    <testCase name="Register Routes POST /register deve retornar 400 para data de nascimento inválida" duration="13"/>
+    <testCase name="Register Routes POST /register deve retornar 400 para CPF inválido" duration="10"/>
+    <testCase name="Register Routes POST /register deve retornar 400 para WhatsApp inválido" duration="17"/>
+    <testCase name="Register Routes POST /register deve retornar 409 para email já existente" duration="16"/>
+    <testCase name="Register Routes POST /register deve retornar 409 para CPF já existente" duration="10"/>
+    <testCase name="Register Routes POST /register deve usar salt alto para hash da senha" duration="9"/>
+    <testCase name="Register Routes POST /register deve gerar token JWT após registro" duration="8"/>
+    <testCase name="Register Routes POST /register deve lidar com erro interno do servidor" duration="13"/>
+    <testCase name="Register Routes POST /register deve sanitizar dados de entrada" duration="9"/>
+    <testCase name="Register Routes POST /register deve retornar dados do usuário sem senha" duration="9"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\hint.test.js">
+    <testCase name="Hint Routes POST /hint deve criar uma nova dica com sucesso" duration="75"/>
+    <testCase name="Hint Routes POST /hint deve criar admirer se não existir" duration="12"/>
+    <testCase name="Hint Routes POST /hint deve lidar com tipo mixed e conteúdo objeto" duration="10"/>
+    <testCase name="Hint Routes POST /hint deve aceitar publicUrl e qrCodeUrl opcionais" duration="13"/>
+    <testCase name="Hint Routes POST /hint deve retornar 400 para conteúdo vazio" duration="12"/>
+    <testCase name="Hint Routes POST /hint deve retornar 400 para tipo inválido" duration="10"/>
+    <testCase name="Hint Routes POST /hint deve aceitar tipos válidos" duration="39"/>
+    <testCase name="Hint Routes POST /hint deve retornar 401 sem token de autenticação" duration="10"/>
+    <testCase name="Hint Routes POST /hint deve lidar com erro interno do servidor" duration="82"/>
+    <testCase name="Hint Routes GET /hint/:id deve buscar uma dica específica e incrementar views" duration="10"/>
+    <testCase name="Hint Routes GET /hint/:id deve retornar 404 para dica não encontrada" duration="12"/>
+    <testCase name="Hint Routes GET /hint/:id deve retornar 404 para rota não encontrada" duration="7"/>
+    <testCase name="Hint Routes GET /hint/:id deve lidar com erro interno do servidor" duration="10"/>
+    <testCase name="Hint Routes GET /hint/:id deve lidar com erro ao incrementar views" duration="9"/>
+    <testCase name="Hint Routes GET / deve buscar todas as dicas do usuário autenticado" duration="8"/>
+    <testCase name="Hint Routes GET / deve retornar array vazio se usuário não tem admirer" duration="6"/>
+    <testCase name="Hint Routes GET / deve retornar array vazio se admirer não tem dicas" duration="6"/>
+    <testCase name="Hint Routes GET / deve lidar com views nulo" duration="6"/>
+    <testCase name="Hint Routes GET / deve retornar 401 sem token de autenticação" duration="6"/>
+    <testCase name="Hint Routes GET / deve lidar com erro interno do servidor" duration="8"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve deletar dica do próprio usuário" duration="7"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve permitir admin deletar qualquer dica" duration="6"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve retornar 404 para dica não encontrada" duration="6"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve retornar 403 se usuário tentar deletar dica de outro" duration="6"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve retornar 400 para ID vazio" duration="26"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve retornar 401 sem token de autenticação" duration="6"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve lidar com erro interno do servidor" duration="10"/>
+    <testCase name="Hint Routes DELETE /hint/:id deve lidar com erro ao deletar interações" duration="14"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\validate.test.js">
+    <testCase name="Validate Routes POST /validate-cpf deve validar CPF com sucesso" duration="136"/>
+    <testCase name="Validate Routes POST /validate-cpf deve sanitizar CPF removendo pontos e traços" duration="21"/>
+    <testCase name="Validate Routes POST /validate-cpf deve aceitar CPF sem formatação" duration="19"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF vazio" duration="10"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF ausente" duration="17"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF com formato inválido" duration="10"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF muito curto" duration="11"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF muito longo" duration="8"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF com caracteres inválidos" duration="11"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar 400 para CPF não string" duration="7"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar false para CPF com formato inválido (dígitos verificadores)" duration="13"/>
+    <testCase name="Validate Routes POST /validate-cpf deve retornar false para CPF não encontrado na base nacional" duration="11"/>
+    <testCase name="Validate Routes POST /validate-cpf deve lidar com erro interno do servidor" duration="51"/>
+    <testCase name="Validate Routes POST /validate-cpf deve lidar com erro da API externa" duration="16"/>
+    <testCase name="Validate Routes POST /validate-cpf deve fazer log de auditoria" duration="7"/>
+    <testCase name="Validate Routes POST /validate-cpf deve fazer log de erro em caso de falha" duration="10"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve validar WhatsApp com sucesso" duration="13"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve sanitizar número de WhatsApp" duration="10"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve aceitar número sem formatação" duration="9"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar 400 para número vazio" duration="7"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar 400 para número ausente" duration="6"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar 400 para número muito curto" duration="6"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar 400 para número muito longo" duration="5"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar 400 para número com poucos dígitos" duration="6"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar 400 para número não string" duration="6"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve retornar false para número não WhatsApp válido" duration="10"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve lidar com erro interno do servidor" duration="12"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve fazer log de auditoria" duration="6"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve fazer log de erro em caso de falha" duration="13"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve aceitar números com diferentes formatos válidos" duration="57"/>
+    <testCase name="Validate Routes POST /validate-whatsapp deve rejeitar números com formatos inválidos" duration="26"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\interaction.test.js">
+    <testCase name="Interaction Routes POST /interaction/answer deve responder uma interação com sucesso" duration="151"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve sanitizar a resposta" duration="23"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 400 para ID inválido" duration="18"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 400 para ID zero ou negativo" duration="12"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 400 para resposta vazia" duration="13"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 400 para resposta não string" duration="9"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 400 para resposta apenas com espaços" duration="11"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 400 para resposta muito longa" duration="11"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve aceitar resposta com exatamente 500 caracteres" duration="22"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 404 para interação não encontrada" duration="13"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 403 para usuário sem permissão" duration="11"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve retornar 403 para acesso negado" duration="11"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve lidar com erro interno do servidor" duration="18"/>
+    <testCase name="Interaction Routes POST /interaction/answer deve fazer log de auditoria" duration="10"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve buscar interações de uma dica" duration="20"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve retornar 400 para ID inválido" duration="9"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve retornar 400 para ID zero ou negativo" duration="8"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve retornar 404 para dica não encontrada" duration="10"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve retornar array vazio se não há interações" duration="13"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve limitar resultados a 50 interações" duration="16"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve ordenar por data de criação decrescente" duration="12"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve lidar com erro interno do servidor" duration="13"/>
+    <testCase name="Interaction Routes GET /hint/:id/interactions deve fazer log de auditoria" duration="5"/>
+    <testCase name="Interaction Routes POST /hint/:id/question deve criar uma pergunta com sucesso" duration="6"/>
+    <testCase name="Interaction Routes POST /hint/:id/question deve retornar 400 para pergunta vazia" duration="6"/>
+    <testCase name="Interaction Routes POST /hint/:id/question deve retornar 400 para pergunta ausente" duration="6"/>
+    <testCase name="Interaction Routes POST /hint/:id/question deve retornar 404 para dica não encontrada" duration="6"/>
+    <testCase name="Interaction Routes POST /hint/:id/question deve lidar com erro interno do servidor" duration="10"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve responder primeira interação pendente" duration="7"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve retornar 400 para resposta vazia" duration="7"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve retornar 400 para resposta ausente" duration="7"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve retornar 404 se não há interações pendentes" duration="6"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve buscar primeira interação por ordem cronológica" duration="10"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve retornar 404 para rota não encontrada sem autenticação adequada" duration="5"/>
+    <testCase name="Interaction Routes POST /hint/:id/answer deve lidar com erro interno do servidor" duration="8"/>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js">
+    <testCase name="Message Routes GET /:id/public deve retornar mensagem pública com replies" duration="147">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 200
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:55:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes GET /:id/public deve retornar 404 para mensagem não encontrada" duration="20">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 404
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:71:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes GET /:id/public deve lidar com erro de atualização de views" duration="30">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 404
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:89:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes GET /:id/public deve lidar com erro interno do servidor" duration="16">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 500
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:99:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve criar mensagem com dados válidos" duration="39">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:129:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve criar mensagem com recipientId" duration="19">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:155:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve criar mensagem com imageUrl" duration="21">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:177:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve retornar 400 para conteúdo inválido" duration="24"/>
+    <testCase name="Message Routes POST / deve retornar 400 para senderId inválido" duration="20">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "ID do remetente é obrigatório"
+Received: "ID do remetente inválido: UUID é obrigatório e deve ser uma string."
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:206:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve retornar 400 para método de contato inválido" duration="16">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "Método de contato inválido"
+Received: "ID do remetente inválido: Formato de UUID inválido."
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:220:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve retornar 400 para email do destinatário inválido" duration="18">
+      <failure message="Error: expect(received).toContain(expected) // indexOf"><![CDATA[Error: expect(received).toContain(expected) // indexOf
+
+Expected substring: "Email do destinatário"
+Received string:    "ID do remetente inválido: Formato de UUID inválido."
+    at Object.toContain (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:234:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve validar telefone do destinatário" duration="14">
+      <failure message="Error: expect(received).toContain(expected) // indexOf"><![CDATA[Error: expect(received).toContain(expected) // indexOf
+
+Expected substring: "Telefone do destinatário"
+Received string:    "ID do remetente inválido: Formato de UUID inválido."
+    at Object.toContain (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:250:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve validar nome de usuário do destinatário" duration="14">
+      <failure message="Error: expect(received).toContain(expected) // indexOf"><![CDATA[Error: expect(received).toContain(expected) // indexOf
+
+Expected substring: "Nome de usuário do destinatário"
+Received string:    "ID do remetente inválido: Formato de UUID inválido."
+    at Object.toContain (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:266:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST / deve lidar com erro interno do servidor" duration="13">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 500
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:276:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes PUT /:id/read deve marcar mensagem como lida com sucesso" duration="27">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "Message marked as read"
+Received: {"id": "6700f41b-801e-4d85-92f5-5062efe80459", "readBy": ["a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"]}
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:300:37)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes PUT /:id/read deve retornar 404 se a mensagem não for encontrada" duration="16">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "Message not found"
+Received: "Mensage não encontrada."
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:318:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes PUT /:id/read deve retornar 500 em caso de erro interno do servidor" duration="30">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "Internal server error"
+Received: "Erro interno ao marcar mensagem como lida."
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:330:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes PUT /:id/read deve retornar 400 para ID de mensagem inválido" duration="12">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "ID da mensagem inválido"
+Received: "Formato de UUID inválido."
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:341:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST /:id/reply deve criar resposta com dados válidos" duration="11">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:372:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST /:id/reply deve criar resposta do remetente" duration="11">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:404:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST /:id/reply deve retornar 400 para ID da mensagem inválido" duration="13"/>
+    <testCase name="Message Routes POST /:id/reply deve retornar 400 para conteúdo inválido" duration="14"/>
+    <testCase name="Message Routes POST /:id/reply deve retornar 400 para fromRecipient inválido" duration="11">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: "Origem da resposta deve ser especificada"
+Received: "Formato de UUID inválido."
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:441:35)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST /:id/reply deve retornar 404 para mensagem não encontrada" duration="10">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 404
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:451:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes POST /:id/reply deve lidar com erro interno do servidor" duration="11">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 500
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:462:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes GET / deve retornar todas as mensagens com replies" duration="11">
+      <failure message="Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)"><![CDATA[Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+- Expected
++ Received
+
+  Object {
+-   "include": Object {
+-     "replies": Object {
+    "orderBy": Object {
+-         "createdAt": "asc",
++     "createdAt": "desc",
+    },
++   "where": Object {
++     "OR": Array [
++       Object {
++         "senderId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        },
++       Object {
++         "recipientId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        },
+-   "orderBy": Object {
+-     "createdAt": "desc",
++     ],
+    },
+  },
+
+Number of calls: 1
+    at Object.toHaveBeenCalledWith (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:499:43)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes GET / deve lidar com erro interno do servidor" duration="11"/>
+    <testCase name="Message Routes DELETE /:id deve deletar mensagem e suas replies" duration="195">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 200
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:531:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes DELETE /:id deve retornar 404 para mensagem não encontrada" duration="20">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 404
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:549:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes DELETE /:id deve lidar com erro de &quot;No record found&quot;" duration="11">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 404
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:560:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+    <testCase name="Message Routes DELETE /:id deve lidar com erro interno do servidor" duration="11">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 500
+Received: 400
+    at Object.toBe (C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\message.test.js:570:31)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)]]></failure>
+    </testCase>
+  </file>
+  <file path="C:\Users\h40040\Projetos\EnigmaCrush\enigma-crush-backend\tests\routes\auth.test.js">
+    <testCase name="Auth Routes deve carregar o aplicativo sem erros" duration="15"/>
+    <testCase name="Auth Routes POST /api/auth/verify-user deve fazer login com credenciais válidas" duration="156"/>
+    <testCase name="Auth Routes POST /api/auth/verify-user deve retornar 400 para email inválido" duration="41"/>
+    <testCase name="Auth Routes POST /api/auth/verify-user deve retornar 401 para senha inválida" duration="1045"/>
+    <testCase name="Auth Routes POST /api/auth/verify-user deve retornar 401 para usuário não encontrado" duration="1052"/>
+    <testCase name="Auth Routes POST /api/auth/verify-user deve retornar 401 para senha incorreta" duration="1032"/>
+    <testCase name="Auth Routes POST /api/auth/refresh-token deve retornar 401 sem token" duration="12"/>
+    <testCase name="Auth Routes POST /api/auth/refresh-token deve retornar 401 para token inválido" duration="39"/>
+    <testCase name="Auth Routes POST /api/auth/refresh-token deve renovar tokens com sucesso" duration="9"/>
+    <testCase name="Auth Routes POST /api/auth/refresh-token deve retornar 404 para usuário não encontrado no refresh" duration="12"/>
+    <testCase name="Auth Routes GET /api/auth/profile deve retornar perfil do usuário autenticado" duration="12"/>
+    <testCase name="Auth Routes GET /api/auth/profile deve retornar 404 para usuário não encontrado no profile" duration="6"/>
+    <testCase name="Auth Routes POST /api/auth/logout deve fazer logout com sucesso" duration="7"/>
+    <testCase name="Auth Routes POST /api/auth/change-password deve retornar 400 se senha atual estiver incorreta" duration="9"/>
+    <testCase name="Auth Routes POST /api/auth/change-password deve retornar 404 se usuário não encontrado" duration="8"/>
+    <testCase name="Auth Routes POST /api/auth/change-password deve retornar 400 para senha atual incorreta" duration="7"/>
+    <testCase name="Auth Routes POST /api/auth/change-password deve alterar senha com sucesso" duration="10"/>
+    <testCase name="Auth Routes POST /api/auth/change-password deve retornar erro 500 em caso de falha no banco de dados" duration="14"/>
+  </file>
+</testExecutions>

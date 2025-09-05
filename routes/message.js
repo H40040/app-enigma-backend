@@ -198,6 +198,47 @@ router.post('/', async (req, res) => {
 router.post('/:id/reply', async (req, res) => {
   const { id } = req.params;
   const { content, fromRecipient } = req.body;
+});
+
+// Marcar mensagem como lida
+router.put('/:id/read', authenticateToken, trackUserActivity, async (req, res) => {
+  const { id } = req.params;
+
+  const idValidation = InputValidator.validateUUID(id);
+  if (!idValidation.isValid) {
+    return res.status(400).json({ error: idValidation.error });
+  }
+
+  try {
+    const message = await prisma.message.findUnique({
+      where: { id }
+    });
+
+    if (!message) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+
+    // Ensure only the recipient can mark as read
+    if (message.recipientId !== req.user.id) {
+      return res.status(403).json({ error: 'Unauthorized: You are not the recipient of this message.' });
+    }
+
+    await prisma.message.update({
+      where: { id },
+      data: { isRead: true }
+    });
+
+    res.status(200).json({ message: 'Message marked as read' });
+  } catch (error) {
+    console.error('Error marking message as read:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Adicionar resposta a uma mensagem
+router.post('/:id/reply', async (req, res) => {
+  const { id } = req.params;
+  const { content, fromRecipient } = req.body;
   
   // Validação do ID da mensagem
   const idValidation = InputValidator.validateUUID(id);

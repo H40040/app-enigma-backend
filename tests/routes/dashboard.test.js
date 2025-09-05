@@ -188,8 +188,6 @@ describe('Dashboard Routes', () => {
     it('deve retornar 400 se parâmetro hintsFor está ausente', async () => {
       const response = await request(app)
         .get('/api/dashboard')
-        .set('Authorization', `Bearer ${validToken}`);
-
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Parâmetro hintsFor é obrigatório.');
     });
@@ -199,6 +197,22 @@ describe('Dashboard Routes', () => {
         .get('/api/dashboard')
         .query({ hintsFor: '' })
         .set('Authorization', `Bearer ${validToken}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Parâmetro hintsFor é obrigatório.');
+    });
+
+    it('deve retornar 500 se ocorrer um erro no banco de dados', async () => {
+      mockPrisma.admirer.findUnique.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app)
+        .get('/api/dashboard')
+        .query({ hintsFor: 'test@example.com' })
+        .set('Authorization', `Bearer ${validToken}`);
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erro interno ao buscar dados do painel.');
+    });
 
       expect(response.status).toBe(400);
       expect(response.body.error).toBe('Parâmetro hintsFor é obrigatório.');

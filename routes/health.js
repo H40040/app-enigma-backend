@@ -26,6 +26,7 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Health check failed:', error);
+    // console.log('DEBUG: Catch block for / endpoint hit!'); // Removed for debugging
     res.status(500).json({
       status: 'UNHEALTHY',
       timestamp: new Date().toISOString(),
@@ -64,6 +65,7 @@ router.post('/test-post', async (req, res) => {
     });
   } catch (error) {
      console.error('[DEBUG] Test POST error:', error);
+     // console.log('DEBUG: Catch block for /test-post endpoint hit!'); // Removed for debugging
      res.status(500).json({
        error: 'Test POST failed',
        message: error.message,
@@ -112,6 +114,7 @@ router.post('/test-auth', async (req, res) => {
     });
   } catch (error) {
     console.error('[ERROR] Test auth failed:', error);
+    // console.log('DEBUG: Catch block for /test-auth endpoint hit!'); // Removed for debugging
     res.status(500).json({ error: 'Test auth failed', details: error.message });
   }
 });
