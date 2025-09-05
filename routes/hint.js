@@ -45,8 +45,8 @@ router.post('/', authenticateToken, checkSessionActivity, trackUserActivity, [
         admirerId: admirer.id,
         content: finalContent,
         type: finalType,
-        publicUrl: publicUrl || null,
-        qrCodeUrl: qrCodeUrl || null
+        ...(publicUrl && { publicUrl }),
+        ...(qrCodeUrl && { qrCodeUrl })
       }
     });
 
@@ -85,8 +85,8 @@ router.get('/:id', [
       content: hint.content,
       type: hint.type,
       views: hint.views + 1,
-      publicUrl: hint.publicUrl,
-      qrCodeUrl: hint.qrCodeUrl
+      publicUrl: hint.publicUrl || null,
+      qrCodeUrl: hint.qrCodeUrl || null
     });
   } catch (error) {
     console.error('Erro ao buscar dica:', error);
@@ -113,8 +113,8 @@ router.get('/', authenticateToken, checkSessionActivity, trackUserActivity, asyn
       type: h.type,
       interactions: h._count.interaction,
       views: h.views || 0,
-      publicUrl: h.publicUrl,
-      qrCodeUrl: h.qrCodeUrl
+      publicUrl: h.publicUrl || null,
+      qrCodeUrl: h.qrCodeUrl || null
     }));
     res.json(formatted);
   } catch (error) {
